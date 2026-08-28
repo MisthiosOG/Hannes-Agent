@@ -1,6 +1,6 @@
 # Contributor Quick Reference
 
-For occasional contributors and PR authors. Full developer docs: https://hermes-agent.nousresearch.com/docs/developer-guide/
+For occasional contributors and PR authors. Full developer docs: https://hermes-agent.nousresearch.com/docs (upstream Hermes docs — base features only; Hannes removed its gateway/desktop/cron surfaces)/developer-guide/
 
 ### Project Layout
 

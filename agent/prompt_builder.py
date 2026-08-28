@@ -162,7 +162,7 @@ HERMES_AGENT_HELP_GUIDANCE = (
     "Hannes itself — configuring, setting up, using, extending, or troubleshooting "
     "it — or when you need to understand your own features, tools, or capabilities, "
     "rely on your installed skills and the local project documentation as your "
-    "reference. Load the `hermes-agent` skill with skill_view(name='hermes-agent') "
+    "reference. Load the `hannes-agent` skill with skill_view(name='hannes-agent') "
     "for additional guidance and proven workflows."
 )
 
@@ -2178,9 +2178,9 @@ def _build_skills_system_prompt_inner(
             "already know how to do, because the skill defines how it should be done here.\n"
             "Whenever the user asks you to configure, set up, install, enable, disable, modify, "
             "or troubleshoot Hannes-Agent itself — its CLI, config, models, providers, tools, "
-            "skills, voice, gateway, plugins, or any feature — load the `hermes-agent` skill "
-            "first. It has the actual commands (e.g. `hermes config set …`, `hermes tools`, "
-            "`hermes setup`) so you don't have to guess or invent workarounds.\n"
+            "skills, plugins, or any feature — load the `hannes-agent` skill "
+            "first. It has the actual commands and also documents how Hannes differs from "
+            "upstream Hermes, so you don't have to guess or invent workarounds.\n"
             "If a skill has issues, fix it with skill_manage(action='patch').\n"
             "After difficult/iterative tasks, offer to save as a skill. "
             "If a skill you loaded was missing steps, had wrong commands, or needed "

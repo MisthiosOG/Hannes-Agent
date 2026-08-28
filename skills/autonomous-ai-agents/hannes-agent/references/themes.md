@@ -1,6 +1,6 @@
-# Themes / Skins — Author a Hermes Color Theme
+# Themes / Skins — Author a Hannes Color Theme
 
-Author a Hermes **skin** — one YAML file that themes the CLI, the TUI, and the
+Author a Hannes **skin** — one YAML file that themes the CLI, the TUI, and the
 desktop GUI at once. The skin engine (`hermes_cli/skin_engine.py`) resolves the
 active skin and the gateway pushes it to every surface, so a file dropped in
 `~/.hermes/skins/` is the theme analogue of a plugin: no code, all surfaces. This
@@ -10,14 +10,14 @@ editors or ship built-in presets.
 ## When to Use
 
 - The user asks for a custom look ("make me a synthwave theme", "dark forest
-  vibes", "match my brand colors") for Hermes itself.
+  vibes", "match my brand colors") for Hannes itself.
 - The user wants the CLI/TUI/desktop to share one coordinated palette.
 - The user wants to iterate live ("that coral is too loud, make it teal") — edit
   the active skin's YAML and every surface repaints as your tool finishes.
 
 ## Prerequisites
 
-- Write access to the Hermes home dir — `~/.hermes` by default, or `$HERMES_HOME`
+- Write access to the Hannes home dir — `~/.hermes` by default, or `$HERMES_HOME`
   / the active profile's dir. Skins live in `<hermes-home>/skins/`.
 - Native tools: `write_file` (create the YAML), `read_file` / `search_files`
   (inspect existing skins), `terminal` (activate via `hermes config set`).

@@ -2,12 +2,12 @@
 
 When a user reports `delegate_task` ran fewer subagents than they asked for
 (e.g. "I set max_concurrent_children: 15 but only 9 ran"), there are exactly
-**three** code paths in Hermes that cap a batch. If none of them fired, the
-cap came from the **model itself** — not from Hermes — and the user's
+**three** code paths in Hannes that cap a batch. If none of them fired, the
+cap came from the **model itself** — not from Hannes — and the user's
 narration of "the runtime caps at N" is the model rationalising its own
 choice.
 
-## The three real caps in Hermes
+## The three real caps in Hannes
 
 All resolved through `tools.delegate_tool._get_max_concurrent_children()`,
 which reads `delegation.max_concurrent_children` from `config.yaml`
@@ -31,7 +31,7 @@ which reads `delegation.max_concurrent_children` from `config.yaml`
    resolved value is `> 10`, logs once at WARNING:
    `delegation.max_concurrent_children=N: each child consumes API tokens
    independently. High values multiply cost linearly.` This is **just a
-   log line** — it does not cap anything. Easy to mis-read as "Hermes is
+   log line** — it does not cap anything. Easy to mis-read as "Hannes is
    refusing my value."
 
 ## Diagnostic recipe
@@ -42,7 +42,7 @@ When a user says "delegate is capped at N":
 # 1. What does the loaded config actually say?
 hermes config get delegation.max_concurrent_children
 
-# 2. Did Hermes' truncator or rejector actually fire?
+# 2. Did Hannes' truncator or rejector actually fire?
 grep -E "Truncated.*delegate_task|Too many tasks" ~/.hermes/logs/agent.log | tail
 # If neither line appears, neither cap path executed.
 
@@ -52,7 +52,7 @@ python -c "from tools.delegate_tool import _get_max_concurrent_children; \
 ```
 
 If config and `_get_max_concurrent_children()` agree, and neither log line
-appears, **the cap is the model**, not Hermes.
+appears, **the cap is the model**, not Hannes.
 
 ## Why models self-limit batches
 

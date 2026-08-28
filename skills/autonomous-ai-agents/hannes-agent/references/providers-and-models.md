@@ -2,7 +2,7 @@
 
 Set via `hermes model` (picker) or `hermes setup`. 35+ provider profiles ship as
 plugins under `plugins/model-providers/`; user plugins of the same name override.
-Full docs: https://hermes-agent.nousresearch.com/docs/integrations/providers
+Full docs: https://hermes-agent.nousresearch.com/docs (upstream Hermes docs — base features only; Hannes removed its gateway/desktop/cron surfaces)/integrations/providers
 
 ### Providers
 
