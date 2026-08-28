@@ -28,29 +28,6 @@ No messaging gateway. No dashboard. No cron scheduler. Just you, the terminal, a
 
 ---
 
-## Score battle
-
-How Hannes stacks up against the agents it competes with:
-
-| | **Hannes** | Hermes | Claude Code | Codex CLI |
-|---|---|---|---|---|
-| Learns from every conversation, automatically | **✓ built-in** | ✓ | ✗ | ✗ |
-| Learns instantly when corrected ("salah!", "that's wrong") | **✓** | ✓ | ✗ | ✗ |
-| Persistent memory with zero setup | **✓ local SQLite** | ✓ | CLAUDE.md only | ✗ |
-| Knowledge map you can inspect (`/brain`) | **✓ + web graph** | ✗ | ✗ | ✗ |
-| XP / level system for the agent | **✓** | ✗ | ✗ | ✗ |
-| Session stats with cost + context bar | **✓** | ✓ | partial | partial |
-| Interactive skin picker | **✓** | ✓ | ✗ | ✗ |
-| Plan / build mode | **✓ Tab toggle** | ✗ | ✓ | ✓ |
-| Zero cloud, zero telemetry | **✓** | ✓ | ✗ | ✗ |
-| Any OpenAI-compatible provider + local models | **✓** | ✓ | Anthropic only | OpenAI only |
-| Lean command surface (no messaging-era bloat) | **~60** | ~95 | ~30 | ~25 |
-| Price | **free, MIT** | free, MIT | $20+/mo | included w/ plan |
-
-> Hermes forked into two directions: upstream went multi-platform (gateway, dashboard, desktop, cron). Hannes went **deep** — pure terminal, self-improving, zero cloud.
-
----
-
 ## Signature features
 
 ### Learns without being asked
