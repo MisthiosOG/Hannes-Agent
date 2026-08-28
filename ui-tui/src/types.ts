@@ -198,6 +198,8 @@ export interface SessionInfo {
   lazy?: boolean
   mcp_servers?: McpServerStatus[]
   model: string
+  /** Active serving provider, e.g. "openrouter", "custom:api.9router.com". */
+  provider?: string
   profile_name?: string
   project?: null | ProjectInfo
   reasoning_effort?: string

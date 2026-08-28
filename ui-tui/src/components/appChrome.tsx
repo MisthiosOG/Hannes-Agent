@@ -502,6 +502,40 @@ const shortModelLabel = (model: string) =>
 const modelLabel = (model: string, effort?: string, fast?: boolean) =>
   [shortModelLabel(model), effortLabel(effort), fast ? 'fast' : ''].filter(Boolean).join(' ')
 
+/** Prettify a provider id for the statusline: "custom:api.9router.com" → "9router",
+ *  "custom:api.tokenrouter.com" → "tokenrouter", "openrouter" → "openrouter". */
+export const providerLabel = (provider?: string): string => {
+  const raw = (provider ?? '').trim()
+
+  if (!raw) {
+    return ''
+  }
+
+  let host = raw.startsWith('custom:') ? raw.slice(7) : raw
+
+  if (!host.includes('.')) {
+    return host
+  }
+
+  const parts = host
+    .replace(/^https?:\/\//, '')
+    .split(/[:/]/)[0]!
+    .split('.')
+    .filter(Boolean)
+
+  // Drop leading service prefixes ("api", "inference-api", "inference") and
+  // the trailing TLD, keep whatever name remains ("9router", "tokenrouter").
+  while (parts.length > 1 && /^(api|inference|inference-api|llm|proxy)$/i.test(parts[0]!)) {
+    parts.shift()
+  }
+
+  if (parts.length > 1) {
+    parts.pop()
+  }
+
+  return parts.join('.') || raw
+}
+
 export function GoodVibesHeart({ tick, t }: { tick: number; t: Theme }) {
   const [active, setActive] = useState(false)
   const [color, setColor] = useState(t.color.accent)
@@ -572,9 +606,10 @@ battery,
    lastTurnEndedAt,
    liveSessionCount,
    // Minimal statusline (display.tui_statusbar_minimal): essentials only.
-   minimal,
-   profileName,
-   sessionTitle,
+    minimal,
+    profileName,
+    providerName,
+    sessionTitle,
    sessionStartedAt,
    toolsCount,
   skillsCount,
@@ -860,7 +895,9 @@ battery,
             </Text>
             <Text color={t.color.text}>
               {' | '}
-              {profileName ? (
+              {providerLabel(providerName) ? (
+                <Text color={t.color.label}>{providerLabel(providerName)} · </Text>
+              ) : profileName && profileName !== 'default' ? (
                 <Text color={t.color.label}>{profileName} · </Text>
               ) : null}
               {model}
@@ -1172,6 +1209,8 @@ interface StatusRuleProps {
   planMode?: boolean
   // Profile name (config profile) shown next to the model in minimal mode.
   profileName?: string
+  // Active serving provider (dynamic) — preferred over the profile label.
+  providerName?: string
   modelFast?: boolean
   modelReasoningEffort?: string
   indicatorStyle?: IndicatorStyle

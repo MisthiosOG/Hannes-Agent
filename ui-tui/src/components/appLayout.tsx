@@ -553,6 +553,7 @@ const StatusRulePane = memo(function StatusRulePane({
         modelReasoningEffort={info?.reasoning_effort}
         minimal={ui.statusMinimal}
         profileName={info?.profile_name}
+        providerName={info?.provider}
         notice={ui.notice}
         onSessionCountClick={() => patchOverlayState({ sessions: true })}
         sessionStartedAt={status.sessionStartedAt}
