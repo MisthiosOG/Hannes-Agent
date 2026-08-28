@@ -9,7 +9,6 @@ import { sectionMode } from '../domain/details.js'
 import { userDisplay } from '../domain/messages.js'
 import { ROLE } from '../domain/roles.js'
 import { transcriptBodyWidth, transcriptGutterWidth } from '../lib/inputMetrics.js'
-import { mix } from '../lib/color.js'
 import {
   boundedLiveRenderText,
   compactPreview,
@@ -366,19 +365,45 @@ export const MessageLine = memo(function MessageLine({
           const barColor = msg.role === 'user' ? t.color.shellDollar : t.color.accent
           const bodyCols = Math.max(1, transcriptBodyWidth(cols, msg.role, t.brand.prompt, TERMUX_TUI_MODE) - 5)
 
+          // opencode-style: solid background card with a coloured rail.
+          // The rail is a full-height Box border (selectable — addressing this
+          // is a future renderer improvement). The padding cells around the
+          // text are fenced in NoSelect so a drag highlights ONLY the text
+          // content, not the empty background. The text stays outside NoSelect
+          // so it remains copyable — matching how opencode behaves.
+          const PAD_X = 2
+          const PAD_Y = 1
+
           return (
             <Box
-              backgroundColor={mix(t.color.completionBg, barColor, 0.08)}
               borderBottom={false}
               borderColor={barColor}
               borderLeft
               borderRight={false}
               borderStyle="single"
               borderTop={false}
-              paddingX={2}
-              paddingY={1}
             >
-              <Box width={bodyCols}>{content}</Box>
+              <Box backgroundColor={t.color.completionBg} flexDirection="column">
+                <NoSelect>
+                  <Text>{' '.repeat(PAD_Y)}</Text>
+                </NoSelect>
+
+                <Box flexDirection="row">
+                  <NoSelect>
+                    <Text>{' '.repeat(PAD_X)}</Text>
+                  </NoSelect>
+
+                  <Box width={bodyCols}>{content}</Box>
+
+                  <NoSelect>
+                    <Text>{' '.repeat(PAD_X)}</Text>
+                  </NoSelect>
+                </Box>
+
+                <NoSelect>
+                  <Text>{' '.repeat(PAD_Y)}</Text>
+                </NoSelect>
+              </Box>
             </Box>
           )
         }

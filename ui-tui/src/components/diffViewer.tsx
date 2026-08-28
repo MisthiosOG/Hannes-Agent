@@ -1,9 +1,7 @@
-import { Box, Text } from '@hermes/ink'
+import { Box, NoSelect, Text } from '@hermes/ink'
 import type { Theme } from '../theme.js'
-
-// ponytail: approved design accent — the theme has no violet token, so the
-// diff rail/header uses a fixed violet (matches the A-variant preview).
-const VIOLET = '#A78BFA'
+import { highlightLine, isHighlightable } from '../lib/syntax.js'
+import { mix } from '../lib/color.js'
 
 // Extract a short filename from a diff header path.  Windows absolute paths
 // (C:\Users\...) and long prefix paths are reduced to the basename so the
@@ -64,6 +62,14 @@ const parseDiff = (raw: string): DiffFile[] => {
   return files
 }
 
+// Language for syntax highlighting, resolved from the diff filename. The
+// highlighter's `isHighlightable` already knows the aliases (tsx→ts, etc.).
+const langFromName = (name: string | null): string => {
+  if (!name) return ''
+  const m = /\.([A-Za-z0-9]+)$/.exec(name)
+  return m ? m[1]! : ''
+}
+
 interface DiffViewerProps {
   text: string
   t: Theme
@@ -71,44 +77,75 @@ interface DiffViewerProps {
 
 export function DiffViewer({ text, t }: DiffViewerProps) {
   const files = parseDiff(text)
+  const rail = t.color.border
 
-  // A-variant: no box, no full background — just a violet left rail and
-  // numbered rows, so the patch reads inline with the surrounding chat
-  // instead of as a separate UI surface.
+  // opencode-style: the row background is the full-width tint (mint for
+  // added, red for removed); the line-number column sits on a slightly
+  // stronger tint so it reads as a separate editor gutter. Syntax
+  // highlighting is drawn on top so tokens stay legible.
+  const addBg = mix(t.color.completionBg, t.color.diffAddedWord, 0.14)
+  const delBg = mix(t.color.completionBg, t.color.diffRemovedWord, 0.14)
+  const addNumBg = mix(t.color.completionBg, t.color.diffAddedWord, 0.24)
+  const delNumBg = mix(t.color.completionBg, t.color.diffRemovedWord, 0.24)
+
   return (
-    <Box borderBottom={false} borderLeft borderColor={VIOLET} borderRight={false} borderStyle="single" borderTop={false} flexDirection="column">
-      {files.map((file, fi) => (
-        <Box flexDirection="column" key={fi}>
-          {file.name ? (
-            <Text color={VIOLET}>
-              {` ${file.name}`}
-              {file.adds + file.dels > 0 ? (
-                <Text>
-                  <Text color={t.color.diffAdded}> +{file.adds}</Text>
-                  <Text color={t.color.diffRemoved}> −{file.dels}</Text>
-                </Text>
-              ) : null}
-            </Text>
-          ) : null}
+    <Box borderBottom={false} borderLeft borderColor={rail} borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" width="100%">
+      {files.map((file, fi) => {
+        const lang = langFromName(file.name)
+        const highlightable = lang ? isHighlightable(lang) : false
 
-          {file.rows.map((row, i) => {
-            const marker = row.kind === 'add' ? '+' : row.kind === 'del' ? '-' : ' '
-            const bg = row.kind === 'add' ? t.color.diffAdded : row.kind === 'del' ? t.color.diffRemoved : undefined
-            const color =
-              row.kind === 'add'
-                ? t.color.diffAddedWord
-                : row.kind === 'del'
-                  ? t.color.diffRemovedWord
-                  : t.color.muted
-
-            return (
-              <Text key={i} backgroundColor={bg} color={color}>
-                {` ${String(row.num).padStart(3)} ${marker}${row.text}`}
+        return (
+          <Box flexDirection="column" key={fi}>
+            {/* File header: name left, +/- counts right */}
+            <Box flexDirection="row" justifyContent="space-between" paddingLeft={1} paddingRight={1}>
+              <Text color={rail} wrap="truncate-end">
+                {file.name ?? '(diff)'}
               </Text>
-            )
-          })}
-        </Box>
-      ))}
+              {file.adds + file.dels > 0 ? (
+                <Box flexDirection="row">
+                  <Text color={t.color.diffAddedWord}>{` +${file.adds}`}</Text>
+                  <Text color={t.color.diffRemovedWord}>{` −${file.dels}`}</Text>
+                </Box>
+              ) : null}
+            </Box>
+
+            <Text color={rail}>{' ─'}</Text>
+
+            {file.rows.map((row, i) => {
+              const marker = row.kind === 'add' ? '+' : row.kind === 'del' ? '-' : ' '
+              const markerColor =
+                row.kind === 'add'
+                  ? t.color.diffAddedWord
+                  : row.kind === 'del'
+                    ? t.color.diffRemovedWord
+                    : t.color.muted
+              const bg = row.kind === 'add' ? addBg : row.kind === 'del' ? delBg : undefined
+              const numBg = row.kind === 'add' ? addNumBg : row.kind === 'del' ? delNumBg : undefined
+              const code = highlightable ? highlightLine(row.text, lang, t) : [[t.color.text, row.text]]
+
+              return (
+                <Box key={i} backgroundColor={bg} flexDirection="row" width="100%">
+                  <NoSelect fromLeftEdge>
+                    <Text backgroundColor={numBg} color={t.color.muted} dimColor>
+                      {` ${String(row.num).padStart(3)} `}
+                    </Text>
+                  </NoSelect>
+                  <NoSelect>
+                    <Text color={markerColor}>{` ${marker} `}</Text>
+                  </NoSelect>
+                  <Text wrap="truncate-end">
+                    {code.map(([color, tok], kk) => (
+                      <Text color={color || t.color.text} key={kk}>
+                        {tok}
+                      </Text>
+                    ))}
+                  </Text>
+                </Box>
+              )
+            })}
+          </Box>
+        )
+      })}
     </Box>
   )
 }
