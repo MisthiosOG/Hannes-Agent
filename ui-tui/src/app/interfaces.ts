@@ -299,6 +299,7 @@ export interface OverlayState {
   pluginsHub: boolean
   secret: null | SecretReq
   sessions: boolean
+  skinPicker: boolean
   skillsHub: boolean
   subscription: SubscriptionOverlayState | null
   sudo: null | SudoReq

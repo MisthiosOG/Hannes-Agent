@@ -19,6 +19,7 @@ const buildOverlayState = (): OverlayState => ({
   pluginsHub: false,
   secret: null,
   sessions: false,
+  skinPicker: false,
   skillsHub: false,
   subscription: null,
   sudo: null
@@ -28,7 +29,7 @@ export const $overlayState = atom<OverlayState>(buildOverlayState())
 
 export const $isBlocked = computed(
   $overlayState,
-  ({
+({
     agents,
     approval,
     billing,
@@ -41,6 +42,7 @@ export const $isBlocked = computed(
     pluginsHub,
     secret,
     sessions,
+    skinPicker,
     skillsHub,
     subscription,
     sudo,
@@ -59,6 +61,7 @@ export const $isBlocked = computed(
       pluginsHub ||
       secret ||
       sessions ||
+      skinPicker ||
       skillsHub ||
       subscription ||
       sudo ||
@@ -124,6 +127,7 @@ export const hasFloatingPanel = (overlay: OverlayState): boolean =>
     overlay.petPicker ||
     overlay.pluginsHub ||
     overlay.sessions ||
+    overlay.skinPicker ||
     overlay.skillsHub
   )
 
@@ -159,5 +163,6 @@ export const resetFlowOverlays = () =>
     petPicker: $overlayState.get().petPicker,
     pluginsHub: $overlayState.get().pluginsHub,
     sessions: $overlayState.get().sessions,
+    skinPicker: $overlayState.get().skinPicker,
     skillsHub: $overlayState.get().skillsHub
   })

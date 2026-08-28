@@ -1,4 +1,4 @@
-import { usageBarsText } from '../../../components/overlayPrimitives.js'
+import { barCells, usageBarsText } from '../../../components/overlayPrimitives.js'
 import { introMsg, toTranscriptMessages } from '../../../domain/messages.js'
 import { sessionScopedModelArg, TUI_SESSION_MODEL_FLAG } from '../../../domain/slash.js'
 import type {
@@ -12,6 +12,7 @@ import type {
   VoiceToggleResponse
 } from '../../../gatewayTypes.js'
 import { formatVoiceRecordKey, parseVoiceRecordKey } from '../../../lib/platform.js'
+import { asRpcResult } from '../../../lib/rpc.js'
 import { fmtK } from '../../../lib/text.js'
 import type { PanelSection } from '../../../types.js'
 import { applyConfiguredTuiTheme } from '../../createGatewayEventHandler.js'
@@ -467,6 +468,34 @@ export const sessionCommands: SlashCommand[] = [
   },
 
   {
+    help: 'browse and apply skins (interactive picker; /skins <name> applies directly)',
+    name: 'skins',
+    run: (arg, ctx) => {
+      const target = arg.trim().toLowerCase()
+
+      if (!target) {
+        // Interactive picker overlay — type to filter, ↑/↓ + Enter to apply.
+        return patchOverlayState({ skinPicker: true })
+      }
+
+      ctx.gateway
+        .rpc<{ active?: string; skins?: { description?: string; name: string; source?: string }[] }>('skin.list')
+        .then(ctx.guarded<{ active?: string; skins?: { description?: string; name: string; source?: string }[] }>(r => {
+          const exists = (r.skins ?? []).some(s => s.name === target)
+
+          if (!exists) {
+            return ctx.transcript.sys(`skins: no skin named "${target}"`)
+          }
+
+          return ctx.gateway
+            .rpc<ConfigSetResponse>('config.set', { key: 'skin', value: target })
+            .then(ctx.guarded<ConfigSetResponse>(res => res.value && ctx.transcript.sys(`skin → ${target}`)))
+        }))
+        .catch(ctx.guardedErr)
+    }
+  },
+
+  {
     help: 'pick the busy indicator: kaomoji (default), emoji, unicode (braille), or ascii',
     name: 'indicator',
     usage: `/indicator [${INDICATOR_STYLES.join('|')}]`,
@@ -734,6 +763,79 @@ export const sessionCommands: SlashCommand[] = [
 
         sys(USAGE_CTA)
       })
+    }
+  },
+
+  {
+    help: 'session + learning stats at a glance (tokens, cost, facts)',
+    name: 'stats',
+    run: (_arg, ctx) => {
+      ctx.gateway
+        .rpc<SessionUsageResponse>('session.usage', { session_id: ctx.sid })
+        .then(async r => {
+          if (ctx.stale()) {
+            return
+          }
+
+          let brain: { facts_total?: number; level?: number; skills_tracked?: number } = {}
+
+          try {
+            const raw = await ctx.gateway.gw.request<{ facts_total?: number; level?: number; skills_tracked?: number }>(
+              'brain.snapshot',
+              { limit: 1 }
+            )
+            brain = asRpcResult(raw) ?? {}
+          } catch {
+            // brain unavailable — stats still render with zeros
+          }
+
+          if (!r || (!r.calls && !(brain.facts_total ?? 0))) {
+            return ctx.transcript.sys('stats: no activity yet — start chatting!')
+          }
+
+          const f = (v: number | undefined) => (v ?? 0).toLocaleString()
+          const model = (r?.model ?? '').split('/').pop() || '—'
+
+          const rows: [string, string][] = [['model', model]]
+          const valueColors: Record<number, string> = { 0: 'primary' }
+
+          // usage: 60 in · 112 out · 1 call
+          const usageBits = [`${f(r?.input)} in`, `${f(r?.output)} out`]
+          if (r?.calls) {
+            usageBits.push(`${f(r.calls)} call${r.calls === 1 ? '' : 's'}`)
+          }
+          rows.push(['usage', usageBits.join(' · ')])
+
+          // spend: $0.0042 · ctx ██░░ 2% (22.8k/1M)
+          const spendBits: string[] = []
+          if (r?.cost_usd !== undefined) {
+            spendBits.push(`$${r.cost_usd < 0.01 ? r.cost_usd.toFixed(4) : r.cost_usd.toFixed(2)}${r.cost_status === 'exact' ? '' : ' est'}`)
+          }
+
+          const ctxPct = r?.context_percent ?? 0
+          const ctxMax = r?.context_max ?? 0
+
+          if (ctxMax > 0) {
+            const { bar } = barCells(ctxPct / 100)
+            spendBits.push(`ctx ${bar} ${ctxPct}% (${fmtK(r?.context_used ?? 0)}/${fmtK(ctxMax)})`)
+          }
+
+          const spendRow = rows.push(['spend', spendBits.join(' · ')]) - 1
+          if (r?.cost_usd !== undefined) {
+            // cheap → ok, expensive → warn
+            valueColors[spendRow] = r.cost_usd > 0.1 ? 'warn' : 'ok'
+          } else if (ctxPct >= 85) {
+            valueColors[spendRow] = 'warn'
+          }
+
+          // growth: Lv.1 · +3 facts · 7 skills
+          const facts = brain.facts_total ?? 0
+          rows.push(['growth', `Lv.${brain.level ?? 1} · +${f(facts)} facts · ${f(brain.skills_tracked)} skills`])
+          valueColors[rows.length - 1] = 'accent'
+
+          ctx.transcript.panel('Session stats', [{ rows, valueColors }])
+        })
+        .catch(ctx.guardedErr)
     }
   }
 ]

@@ -376,6 +376,24 @@ def _(rid, params: dict) -> dict:
     return _err(rid, 4002, f"unknown config key: {key}")
 
 
+@method("skin.list")
+def _(rid, params: dict) -> dict:
+    """List available skins (built-in + user-installed) with descriptions.
+
+    Powers the TUI `/skins` browser: name + description per skin, plus the
+    currently active one from config so the panel can mark it.
+    """
+    try:
+        from hermes_cli.skin_engine import list_skins
+
+        skins = list_skins()
+    except Exception as e:
+        return _err(rid, 5016, f"could not list skins: {e}")
+
+    active = str((_load_cfg().get("display") or {}).get("skin", "default") or "default")
+    return _ok(rid, {"skins": skins, "active": active})
+
+
 @method("setup.status")
 def _(rid, params: dict) -> dict:
     try:

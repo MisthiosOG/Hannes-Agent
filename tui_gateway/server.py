@@ -13501,6 +13501,44 @@ _TUI_HIDDEN: frozenset[str] = frozenset(
         "commands",
         "approve",
         "deny",
+        # ── Pruned for the pure-CLI Hannes build (declutter pass). These
+        # commands still dispatch when typed manually; they are only hidden
+        # from /help and the command palette. Remove a name here to restore it.
+        # Gateway/messaging/Nous leftovers:
+        "handoff",
+        "whoami",
+        "egress",
+        "subscription",
+        "topup",
+        "insights",
+        "debug",
+        "kanban",
+        # Niche / rarely used:
+        "codex-runtime",
+        "moa",
+        "goal",
+        "subgoal",
+        "heartbeat",
+        "loop",
+        "blueprint",
+        "suggestions",
+        "worktree",
+        "export",
+        "import",
+        "pet",
+        "hatch",
+        "wake",
+        "battery",
+        "footer",
+        "timestamps",
+        "indicator",
+        "palette",
+        # Duplicates (kept alive, hidden from discovery):
+        "clear",       # = /new
+        "snapshot",    # /rollback covers checkpoints
+        "usage",       # replaced by /stats
+        "reload-mcp",  # /reload covers it
+        "reload-skills",
     }
 )
 
@@ -13513,6 +13551,8 @@ _TUI_EXTRA: list[tuple[str, str, str]] = [
         "TUI",
     ),
     ("/sessions", "Switch between live TUI sessions", "TUI"),
+    ("/skins", "Browse and apply skins", "TUI"),
+    ("/stats", "Session + learning stats at a glance", "TUI"),
 ]
 
 # Commands that queue messages onto _pending_input in the CLI.

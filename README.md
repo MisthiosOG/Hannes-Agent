@@ -16,7 +16,7 @@
 
 ## Preview
 
-![Hannes-Agent logo](assets/logo.png)
+![Hannes-Agent](assets/preview.png)
 
 ---
 

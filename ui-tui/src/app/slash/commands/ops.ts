@@ -127,9 +127,25 @@ export const opsCommands: SlashCommand[] = [
   },
 
   {
-    help: 're-read ~/.hermes/.env into the running gateway (CLI parity)',
+    help: 'reload runtime state: /reload [env|mcp|skills] (default env)',
     name: 'reload',
-    run: (_arg, ctx) => {
+    usage: '/reload [env|mcp|skills]',
+    run: (arg, ctx) => {
+      const [what = 'env', ...rest] = arg.trim().toLowerCase().split(/\s+/)
+
+      if (what === 'mcp') {
+        // Delegate to the /reload-mcp handler (hidden from lists, still registered).
+        return opsCommands.find(c => c.name === 'reload-mcp')?.run(rest.join(' '), ctx, 'reload-mcp')
+      }
+
+      if (what === 'skills' || what === 'skill') {
+        return opsCommands.find(c => c.name === 'reload-skills')?.run('', ctx, 'reload-skills')
+      }
+
+      if (what !== 'env' && what !== '') {
+        return ctx.transcript.sys('usage: /reload [env|mcp|skills]')
+      }
+
       ctx.gateway
         .rpc<ReloadEnvResponse>('reload.env', {})
         .then(

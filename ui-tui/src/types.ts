@@ -249,6 +249,8 @@ export interface PanelSection {
   rows?: [string, string][]
   text?: string
   title?: string
+  /** Per-row value color override (index → ThemeColors key). */
+  valueColors?: Record<number, string>
 }
 
 export interface SlashCatalog {

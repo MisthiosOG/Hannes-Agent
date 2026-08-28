@@ -346,6 +346,25 @@ def _(rid, params: dict) -> dict:
             skill_bundles_provider=lambda: get_skill_bundles(),
         )
         doc = Document(text, len(text))
+
+        # Declutter: keep _TUI_HIDDEN commands (and their aliases) out of the
+        # palette/autocomplete. They still dispatch when typed manually.
+        # Completion text at the command-token stage has NO leading slash
+        # (prompt_toolkit emits the remainder), so resolve bare tokens too —
+        # but only at command stage, never for argument/subcommand items.
+        from hermes_cli.commands import resolve_command as _resolve_cmd
+
+        _command_stage = text.rsplit(" ", 1)[-1].startswith("/")
+
+        def _tui_hidden_completion(comp_text: str) -> bool:
+            if not _command_stage:
+                return False
+            token = comp_text.strip().lstrip("/").split(" ")[0]
+            if not token:
+                return False
+            cmd = _resolve_cmd(token)
+            return cmd is not None and cmd.name in _TUI_HIDDEN
+
         # Skill commands and bundles are the only completions offered for an
         # inline `/skill` reference typed mid-message, so the class has to
         # reach the TUI as data. Derived from the same providers the completer
@@ -371,6 +390,7 @@ def _(rid, params: dict) -> dict:
                 ),
             }
             for c in completer.get_completions(doc, None)
+            if not _tui_hidden_completion(c.text)
         ]
 
         # Rank and bound the list (see _rank_slash_completions) while a
@@ -403,6 +423,7 @@ def _(rid, params: dict) -> dict:
                         ),
                     }
                     for c in completer.get_completions(Document("/", 1), None)
+                    if not _tui_hidden_completion(c.text)
                 ]
                 items, score_of = fuzzy_rank_slash_items(
                     items, universe, normalize_slash_search_query(text)
@@ -439,6 +460,18 @@ def _(rid, params: dict) -> dict:
                 "text": "/mouse",
                 "display": "/mouse",
                 "meta": "Set mouse tracking preset [on|off|toggle|wheel|buttons|all]",
+                "kind": "command",
+            },
+            {
+                "text": "/skins",
+                "display": "/skins",
+                "meta": "Browse and apply skins",
+                "kind": "command",
+            },
+            {
+                "text": "/stats",
+                "display": "/stats",
+                "meta": "Session + learning stats at a glance",
                 "kind": "command",
             },
         ]

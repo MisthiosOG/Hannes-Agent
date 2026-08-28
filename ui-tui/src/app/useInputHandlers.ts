@@ -243,6 +243,10 @@ export function useInputHandlers(ctx: InputHandlerContext): InputHandlerResult {
       return patchOverlayState({ skillsHub: false })
     }
 
+    if (overlay.skinPicker) {
+      return patchOverlayState({ skinPicker: false })
+    }
+
     if (overlay.pluginsHub) {
       return patchOverlayState({ pluginsHub: false })
     }

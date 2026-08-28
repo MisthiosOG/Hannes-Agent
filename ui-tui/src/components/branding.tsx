@@ -5,7 +5,7 @@ import unicodeSpinners from 'unicode-animations'
 import { artWidth, caduceus, CADUCEUS_WIDTH, logo, LOGO_WIDTH } from '../banner.js'
 import { mix } from '../lib/color.js'
 import { flat } from '../lib/text.js'
-import type { Theme } from '../theme.js'
+import type { Theme, ThemeColors } from '../theme.js'
 import type { BrainStats, PanelSection, SessionInfo } from '../types.js'
 
 import { Accordion } from './accordion.js'
@@ -703,7 +703,7 @@ export function Panel({ sections, t, title }: PanelProps) {
           {sec.rows?.map(([k, v], ri) => (
             <Text key={ri} wrap="truncate">
               <Text color={t.color.muted}>{k.padEnd(20)}</Text>
-              <Text color={t.color.text}>{v}</Text>
+              <Text color={sec.valueColors?.[ri] ? t.color[sec.valueColors[ri] as keyof ThemeColors] : t.color.text}>{v}</Text>
             </Text>
           ))}
 

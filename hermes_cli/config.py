@@ -585,8 +585,8 @@ def recommended_update_command_for_method(method: str) -> str:
     if method == "apt":
         # By contract, the current "apt" install method is the Termux APT
         # distribution. It deliberately uses Termux's `pkg` frontend.
-        return "pkg upgrade hermes-agent"
-    return "hermes update"
+        return "pkg upgrade hannes"
+    return "hannes update"
 
 
 def recommended_update_command() -> str:
