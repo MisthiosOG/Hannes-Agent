@@ -277,8 +277,11 @@ COMMAND_REGISTRY: list[CommandDef] = [
                subcommands=("on", "off", "status"), busy_policy="dispatch"),
     CommandDef("yolo", "Toggle YOLO mode (skip all dangerous command approvals)",
                "Configuration", busy_policy="dispatch"),
-    CommandDef("approvals", "Show or set the persistent dangerous-command approval mode",
-               "Configuration", args_hint="[manual|smart|off]",
+    # Public name for the approval gate. `/approvals` stays as an alias so old
+    # muscle memory and docs keep dispatching; `/yolo` remains its own
+    # (hidden) toggle because it is session-scoped, not a persisted mode.
+    CommandDef("permission", "Show or set the persistent dangerous-command approval mode",
+               "Configuration", aliases=("approvals",), args_hint="[manual|smart|off]",
                subcommands=("manual", "smart", "off")),
     CommandDef("reasoning", "Manage reasoning effort and display", "Configuration",
                args_hint="[level|show|hide|full|clamp] [--global]",
@@ -460,6 +463,42 @@ HELP_SESSION_SUBGROUPS: dict[str, tuple[str, ...]] = {
         "moa", "journey", "learning", "memory-graph",
     ),
 }
+
+# Task groups — the label the TUI palette prints in its right-hand column
+# (Hannes command surface, option B). `category` stays as-is because gateway
+# help, Telegram menus and Slack routing all derive from it; this is a second,
+# user-facing axis: "what am I trying to do", not "which subsystem owns it".
+# Names are bare (no leading /). Anything unlisted falls back to its category.
+TASK_GROUPS: dict[str, tuple[str, ...]] = {
+    "Start": ("new", "resume", "sessions", "branch", "history", "title"),
+    "Learn": ("brain", "learn", "refine", "journey", "skills", "curator", "bundles", "memory"),
+    "Build": ("init", "diff", "rollback", "undo", "retry", "prompt", "queue", "steer", "background"),
+    "Tools": ("tools", "toolsets", "plugins", "browser", "reload", "agents", "stop"),
+    "Look": ("skin", "skins", "density", "statusbar", "verbose", "focus", "personality", "voice"),
+    "Session": (
+        "model", "context", "compress", "stats", "permission", "save", "copy",
+        "image", "paste", "status", "reasoning", "fast", "busy", "plan",
+    ),
+    "Utility": ("help", "config", "update", "version", "logs", "redraw", "profile", "mouse"),
+    "Exit": ("quit",),
+}
+
+# Reverse index built once: name/alias -> task group label.
+TASK_GROUP_OF: dict[str, str] = {}
+for _group, _names in TASK_GROUPS.items():
+    for _n in _names:
+        TASK_GROUP_OF[_n] = _group
+        _resolved = _COMMAND_LOOKUP.get(_n)
+        if _resolved is not None:
+            TASK_GROUP_OF[_resolved.name] = _group
+            for _a in _resolved.aliases:
+                TASK_GROUP_OF.setdefault(_a, _group)
+
+
+def task_group_of(name: str, fallback: str = "") -> str:
+    """Task-group label for a command name/alias, or ``fallback``."""
+    return TASK_GROUP_OF.get(name.lower().lstrip("/"), fallback)
+
 
 # Also extract subcommands hinted in args_hint via pipe-separated patterns
 # e.g. args_hint="[on|off|tts|status]" for commands that don't have explicit subcommands.

@@ -1,6 +1,6 @@
 # Hannes-Agent
 
-> A self-improving personal CLI agent by **Dopamine Team** — built on top of Hermes Agent (Nous Research).
+> A self-improving personal CLI agent by **Dopamine Team** — it learns from every conversation and gets smarter the more you use it.
 
 ```
 ⌘ Hannes-Agent              Dopamine Team   v2.0
@@ -106,7 +106,7 @@ Facts are stored with trust scores, entity relations, and FTS5 search. Memory gr
 
 ## Stack
 
-- **Core:** Python (Hermes Agent base)
+- **Core:** Python
 - **TUI:** TypeScript + Ink (React for terminals)
 - **Memory:** Holographic SQLite provider (local, zero cloud dependency)
 - **Models:** Any OpenAI-compatible endpoint via OpenRouter, direct API, or custom URL
@@ -139,4 +139,4 @@ auxiliary:
 
 ## Credits
 
-Built by **Dopamine Team** on top of [Hermes Agent](https://github.com/NousResearch/hermes-agent) by Nous Research (MIT License).
+Built and maintained by **Dopamine Team**. Inspired by the open-source agent ecosystem (MIT License).

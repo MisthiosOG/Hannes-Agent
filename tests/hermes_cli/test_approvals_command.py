@@ -28,15 +28,20 @@ def _completions(text: str) -> set[str]:
 
 
 def test_approvals_registry_drives_help_menu_and_autocomplete():
-    command = resolve_command("approvals")
+    # /permission is the public name; /approvals is a legacy alias.
+    command = resolve_command("permission")
     assert command is not None
     assert command.category == "Configuration"
     assert command.args_hint == "[manual|smart|off]"
-    assert SUBCOMMANDS["/approvals"] == ["manual", "smart", "off"]
+    assert resolve_command("approvals") is command
+    assert SUBCOMMANDS["/permission"] == ["manual", "smart", "off"]
+    assert "permission" in GATEWAY_KNOWN_COMMANDS
     assert "approvals" in GATEWAY_KNOWN_COMMANDS
-    assert any("/approvals" in line for line in gateway_help_lines())
-    assert "approvals" in {name for name, _ in telegram_bot_commands()}
+    assert any("/permission" in line for line in gateway_help_lines())
+    assert "permission" in {name for name, _ in telegram_bot_commands()}
+    # The alias still completes its subcommands.
     assert _completions("/approvals ") == {"manual", "smart", "off"}
+    assert _completions("/permission ") == {"manual", "smart", "off"}
 
 
 def _isolate_config(monkeypatch, home):

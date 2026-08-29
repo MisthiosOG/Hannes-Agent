@@ -297,6 +297,7 @@ export function useVirtualHistory(
   const vp = safeUnsignedGeometry(scrollRef.current?.getViewportHeight() ?? 0)
   const sticky = scrollRef.current?.isSticky() ?? true
   const recentManual = Date.now() - (scrollRef.current?.getLastManualScrollAt() ?? 0) < 1200
+  const scrollingUp = top < lastScrollTopRef.current || pendingDelta < 0
 
   // During a freeze, drop the frozen range if items shrank past its start
   // (/clear, compaction) — clamping would collapse to an empty mount and
@@ -441,7 +442,10 @@ export function useVirtualHistory(
   // Inverted range (large jump with deferred value lagging) or sticky snap
   // (scrollToBottom needs the tail mounted NOW so maxScroll lands on content,
   // not bottomSpacer) — skip deferral.
-  if (effStart > effEnd || sticky) {
+  // Mount older rows immediately while the user is actively scrolling up.
+  // Deferring this edge made PageUp appear stuck until React's deferred commit
+  // arrived, especially when the newly mounted rows contain markdown/diffs.
+  if (effStart > effEnd || sticky || scrollingUp) {
     effStart = start
     effEnd = end
   }

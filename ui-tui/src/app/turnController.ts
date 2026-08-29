@@ -488,7 +488,10 @@ class TurnController {
     // leading "┊ review diff" header written by `_emit_inline_diff` for the
     // terminal printer). That header only makes sense as stdout dressing,
     // not inside a markdown ```diff block.
-    const stripped = diffText.replace(/^\s*┊[^\n]*\n?/, '').trim()
+    const stripped = diffText
+      .replace(/^\s*┊[^\n]*\n?/, '')
+      .replace(/^\s*#\s*Wrote\s+[^\n]+\n?/i, '')
+      .trim()
 
     if (!stripped) {
       return
@@ -503,10 +506,10 @@ class TurnController {
 
     const block = `\`\`\`diff\n${stripped}\n\`\`\``
 
-    // Skip consecutive duplicates (same tool firing tool.complete twice, or
-    // two edits producing the same patch). Keeping this cheap — deeper
-    // dedupe against the final assistant text happens at message.complete.
-    if (this.segmentMessages.at(-1)?.text === block) {
+    // Skip duplicates anywhere in the active turn, not only when adjacent.
+    // A repeated tool.complete can have a tool shelf or narration between two
+    // identical patches; tail-only dedupe rendered the same file several times.
+    if (this.segmentMessages.some(msg => msg.kind === 'diff' && msg.text === block)) {
       return
     }
 
@@ -827,7 +830,8 @@ class TurnController {
     }
 
     this.flushStreamingSegment()
-    this.pushInlineDiffSegment(diffText, [this.completeTool(toolId, fallbackName, error, '', duration, resultText)])
+    const cleanResult = /^\s*#\s*wrote\b/i.test(resultText ?? '') ? undefined : resultText
+    this.pushInlineDiffSegment(diffText, [this.completeTool(toolId, fallbackName, error, '', duration, cleanResult)])
     this.publishToolState()
   }
 

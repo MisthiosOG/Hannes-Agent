@@ -20,9 +20,9 @@ import {
 import type { Theme } from '../theme.js'
 import type { ActiveTool, DetailsMode, Msg, SectionVisibility } from '../types.js'
 
+import { DiffViewer } from './diffViewer.js'
 import { Md } from './markdown.js'
 import { StreamingMd } from './streamingMarkdown.js'
-import { DiffViewer } from './diffViewer.js'
 import { ToolTrail } from './thinking.js'
 import { TodoPanel } from './todoPanel.js'
 
@@ -139,8 +139,8 @@ export const MessageLine = memo(function MessageLine({
         alignSelf="flex-start"
         backgroundColor={t.color.completionBg}
         borderBottom={false}
-        borderLeft
         borderColor={t.color.muted}
+        borderLeft
         borderRight={false}
         borderStyle="single"
         borderTop={false}
@@ -190,7 +190,7 @@ export const MessageLine = memo(function MessageLine({
     // ```diff fences and can carry ANSI chrome; DiffViewer strips both and
     // renders the styled card (background + header + numbered rows).
     if (msg.kind === 'diff') {
-      return <DiffViewer text={msg.text} t={t} />
+      return <DiffViewer t={t} text={msg.text} />
     }
 
     if (msg.kind === 'slash') {
@@ -353,17 +353,31 @@ export const MessageLine = memo(function MessageLine({
       )}
 
       {(() => {
+        // A diff is already a complete visual surface. Do not wrap it in the
+        // normal assistant chat row: that adds a second gutter/rail and makes
+        // the patch look like a card inside another card.
+        if (msg.kind === 'diff') {
+          return <Box width={transcriptBodyWidth(cols, msg.role, t.brand.prompt, TERMUX_TUI_MODE)}>{content}</Box>
+        }
+
         // Hannes custom: pesan user & balasan bot — bar vertikal kiri + background
         // tinted tipis (konsisten dengan pill tool calls & header panel). Bar
         // aksen + bg ringan di atas kanvas native = bersih, gaya opencode.
         // User = bar biru (shellDollar), bot = bar hijau (accent tema).
-        // Diff segments ikut card style yang sama supaya edit code tidak
-        // tampil sebagai UI terpisah dari chat (glyph/gutter beda).
-        const useCardStyle = (msg.role === 'user' || msg.role === 'assistant') && (!msg.kind || msg.kind === 'diff')
+        // Diff segments bypass this wrapper and render as their own dedicated
+        // surface below, so edits do not become a card inside a chat card.
+        const useCardStyle = (msg.role === 'user' || msg.role === 'assistant') && !msg.kind
 
         if (useCardStyle) {
           const barColor = msg.role === 'user' ? t.color.shellDollar : t.color.accent
-          const bodyCols = Math.max(1, transcriptBodyWidth(cols, msg.role, t.brand.prompt, TERMUX_TUI_MODE) - 5)
+          // Cards have NO gutter — the rail replaces it — so the body width
+          // must be role-independent. transcriptBodyWidth shrinks by the
+          // role's gutter (user = prompt width 2, assistant = 3), which made
+          // user cards 1 column wider than assistant cards.
+          const bodyCols = Math.max(
+            1,
+            transcriptBodyWidth(cols, 'assistant', t.brand.prompt, TERMUX_TUI_MODE) - 5
+          )
 
           // opencode-style: solid background card with a coloured rail.
           // The rail is a full-height Box border (selectable — addressing this

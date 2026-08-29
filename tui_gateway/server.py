@@ -13539,8 +13539,14 @@ _TUI_HIDDEN: frozenset[str] = frozenset(
         "usage",       # replaced by /stats
         "reload-mcp",  # /reload covers it
         "reload-skills",
+        # Legacy (kept alive, hidden from discovery):
+        "yolo",        # = /permission off (session-scoped toggle)
     }
 )
+
+# Alias names that must also stay out of TUI discovery/completion even though
+# they resolve to a VISIBLE canonical command (e.g. /approvals → /permission).
+_TUI_HIDDEN_ALIASES: frozenset[str] = frozenset({"approvals"})
 
 _TUI_EXTRA: list[tuple[str, str, str]] = [
     ("/density", "Toggle compact display mode", "TUI"),
@@ -14348,7 +14354,7 @@ def _mirror_slash_side_effects(sid: str, session: dict, command: str) -> str:
         if name == "model" and arg and agent:
             result = _apply_model_switch(sid, session, arg)
             return result.get("warning", "")
-        elif name == "approvals" and arg:
+        elif name in {"permission", "approvals"} and arg:
             # The slash worker already persisted the new approvals.mode; the
             # bare (read-only) form has no arg and needs no repaint.
             broadcast_session_info()

@@ -48,7 +48,7 @@ def run_approval_mode_command(requested_mode: Optional[str]) -> ApprovalModeResu
             False,
             current,
             False,
-            "Usage: /approvals [manual|smart|off]",
+            "Usage: /permission [manual|smart|off]",
         )
 
     # set_config_value is the canonical managed-scope/write-safety chokepoint.

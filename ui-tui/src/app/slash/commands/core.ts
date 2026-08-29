@@ -107,7 +107,12 @@ export const coreCommands: SlashCommand[] = [
     help: 'list commands + hotkeys',
     name: 'help',
     run: (_arg, ctx) => {
-      const sections: PanelSection[] = (ctx.local.catalog?.categories ?? []).map(cat => ({
+      // Task-grouped help (Start/Learn/Build/…) when the gateway serves the
+      // task axis; falls back to subsystem categories for older gateways.
+      const cats = ctx.local.catalog?.taskCategories?.length
+        ? ctx.local.catalog.taskCategories
+        : ctx.local.catalog?.categories
+      const sections: PanelSection[] = (cats ?? []).map(cat => ({
         rows: cat.pairs,
         title: cat.name
       }))

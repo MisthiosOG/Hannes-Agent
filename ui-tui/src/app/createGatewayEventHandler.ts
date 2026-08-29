@@ -675,9 +675,11 @@ export function createGatewayEventHandler(ctx: GatewayEventHandlerContext): (ev:
         setCatalog({
           canon: (r.canon ?? {}) as Record<string, string>,
           categories: r.categories ?? [],
+          groups: (r.groups ?? {}) as Record<string, string>,
           pairs: r.pairs as [string, string][],
           skillCount: (r.skill_count ?? 0) as number,
-          sub: (r.sub ?? {}) as Record<string, string[]>
+          sub: (r.sub ?? {}) as Record<string, string[]>,
+          taskCategories: r.task_categories ?? []
         })
 
         if (r.warning) {

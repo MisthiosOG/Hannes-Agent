@@ -433,8 +433,11 @@ return (
                 // Explicit meta width: flex-shrink alone lets the Text measure
                 // wider than its box (Ink's AtMost pass), so the truncation
                 // ellipsis rendered past the border. Pin the column instead —
-                // interior = width - 2 borders; minus name track and its pad.
-                const metaW = Math.max(8, width - 4 - (nameW + 1))
+                // interior = width - 2 borders; minus name track and its pad,
+                // and the right-hand task-group column when any row has one.
+                const groups = completions.map(item => item.group ?? '').filter(Boolean)
+                const groupW = groups.length ? Math.min(12, Math.max(...groups.map(g => g.length)) + 2) : 0
+                const metaW = Math.max(8, width - 4 - (nameW + 1) - groupW)
 
                 return visible.map((item, i) => {
                   const active = start + i === compIdx
@@ -478,6 +481,11 @@ return (
                           >
                             {meta}
                           </Text>
+                        </Box>
+                      ) : null}
+                      {groupW > 0 && item.group ? (
+                        <Box flexShrink={0} justifyContent="flex-end" width={groupW}>
+                          <Text color={active ? row.color : theme.color.label}>{item.group}</Text>
                         </Box>
                       ) : null}
                     </Box>

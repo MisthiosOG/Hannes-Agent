@@ -642,6 +642,18 @@ describe('createGatewayEventHandler', () => {
     expect(appended[3]?.text).not.toContain('```diff')
   })
 
+  it('deduplicates repeated inline diffs even when a tool shelf is between them', () => {
+    const appended: Msg[] = []
+    const onEvent = createGatewayEventHandler(buildCtx(appended))
+    const diff = '--- a/foo.ts\n+++ b/foo.ts\n@@\n-old\n+new'
+
+    onEvent({ payload: { inline_diff: diff, name: 'patch', tool_id: 'tool-1' }, type: 'tool.complete' } as any)
+    onEvent({ payload: { name: 'terminal', tool_id: 'tool-2' }, type: 'tool.start' } as any)
+    onEvent({ payload: { inline_diff: diff, name: 'patch', tool_id: 'tool-3' }, type: 'tool.complete' } as any)
+
+    expect(turnController.segmentMessages.filter(msg => msg.kind === 'diff')).toHaveLength(1)
+  })
+
   it('keeps verbose result text on inline_diff tool completions', () => {
     const appended: Msg[] = []
     const onEvent = createGatewayEventHandler(buildCtx(appended))

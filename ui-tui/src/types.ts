@@ -258,6 +258,10 @@ export interface PanelSection {
 export interface SlashCatalog {
   canon: Record<string, string>
   categories: SlashCategory[]
+  /** Task-group axis: `/command` → group label (palette right column). */
+  groups?: Record<string, string>
+  /** Same pairs as `categories`, but grouped by task (Start/Learn/Build/…). */
+  taskCategories?: SlashCategory[]
   pairs: [string, string][]
   skillCount: number
   sub: Record<string, string[]>

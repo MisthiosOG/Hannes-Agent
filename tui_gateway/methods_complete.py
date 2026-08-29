@@ -362,6 +362,8 @@ def _(rid, params: dict) -> dict:
             token = comp_text.strip().lstrip("/").split(" ")[0]
             if not token:
                 return False
+            if token in _TUI_HIDDEN_ALIASES:
+                return True
             cmd = _resolve_cmd(token)
             return cmd is not None and cmd.name in _TUI_HIDDEN
 
@@ -369,6 +371,8 @@ def _(rid, params: dict) -> dict:
         # inline `/skill` reference typed mid-message, so the class has to
         # reach the TUI as data. Derived from the same providers the completer
         # uses — no sniffing the ⚡/▣ meta glyphs, which are display text.
+        from hermes_cli.commands import task_group_of as _task_group_of
+
         skill_names = {
             key.lstrip("/").lower()
             for key in (*get_skill_commands(), *get_skill_bundles())
@@ -387,6 +391,13 @@ def _(rid, params: dict) -> dict:
                     "skill"
                     if c.text.strip().lstrip("/").lower() in skill_names
                     else "command"
+                ),
+                # Task-group label for the palette's right-hand column
+                # (Start/Learn/Build/…); skills have no registry entry and
+                # resolve to "". "" is falsy — the TUI then omits the column.
+                "group": _task_group_of(
+                    c.text.strip().lstrip("/").split(" ")[0],
+                    "",
                 ),
             }
             for c in completer.get_completions(doc, None)
@@ -420,6 +431,10 @@ def _(rid, params: dict) -> dict:
                             "skill"
                             if c.text.strip().lstrip("/").lower() in skill_names
                             else "command"
+                        ),
+                        "group": _task_group_of(
+                            c.text.strip().lstrip("/").split(" ")[0],
+                            "",
                         ),
                     }
                     for c in completer.get_completions(Document("/", 1), None)

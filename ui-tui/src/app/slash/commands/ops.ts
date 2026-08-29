@@ -493,9 +493,11 @@ export const opsCommands: SlashCommand[] = [
                   ctx.local.setCatalog({
                     canon: (catalog.canon ?? {}) as Record<string, string>,
                     categories: catalog.categories ?? [],
+                    groups: (catalog.groups ?? {}) as Record<string, string>,
                     pairs: catalog.pairs as [string, string][],
                     skillCount: (catalog.skill_count ?? 0) as number,
-                    sub: (catalog.sub ?? {}) as Record<string, string[]>
+                    sub: (catalog.sub ?? {}) as Record<string, string[]>,
+                    taskCategories: catalog.task_categories ?? []
                   })
                 })
               )

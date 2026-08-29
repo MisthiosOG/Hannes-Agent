@@ -13,6 +13,8 @@ export interface GatewayCompletionItem {
    *  skill bundles — the only kind offered for an inline `/skill` reference. */
   kind?: string
   meta?: string
+  /** Task-group label (Start/Learn/Build/…) for the palette's right column. */
+  group?: string
   text: string
 }
 
@@ -30,9 +32,11 @@ export interface GatewayTranscriptMessage {
 export interface CommandsCatalogResponse {
   canon?: Record<string, string>
   categories?: SlashCategory[]
+  groups?: Record<string, string>
   pairs?: [string, string][]
   skill_count?: number
   sub?: Record<string, string[]>
+  task_categories?: SlashCategory[]
   warning?: string
 }
 

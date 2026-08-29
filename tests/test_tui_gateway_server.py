@@ -9929,8 +9929,13 @@ def test_commands_catalog_filters_gateway_only_commands_and_keeps_status_visible
 
     assert "/status" in pairs
     assert canon["/status"] == "/status"
-    assert "/approvals" in pairs
-    assert resp["result"]["sub"]["/approvals"] == ["manual", "smart", "off"]
+    # /permission is the public name; /approvals survives only as a hidden
+    # legacy alias (resolves to the same canonical, but not advertised).
+    assert "/permission" in pairs
+    assert resp["result"]["sub"]["/permission"] == ["manual", "smart", "off"]
+    assert canon["/approvals"] == "/permission"
+    assert "/approvals" not in pairs
+    assert "/yolo" not in pairs
 
     assert "/topic" not in pairs
     assert "/approve" not in pairs

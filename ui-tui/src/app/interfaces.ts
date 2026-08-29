@@ -93,6 +93,8 @@ export interface CompletionItem {
    *  an inline `/skill` reference typed mid-message. */
   kind?: string
   meta?: string
+  /** Task-group label (Start/Learn/Build/…) for the palette's right column. */
+  group?: string
   text: string
 }
 

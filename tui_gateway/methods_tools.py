@@ -267,6 +267,24 @@ def _(rid, params: dict) -> dict:
         categories: list[dict] = []
         cat_map: dict[str, list[list[str]]] = {}
         cat_order: list[str] = []
+        # Task-group axis (palette right column + grouped /help). Separate from
+        # `categories`, which stays subsystem-shaped for gateway help/Telegram.
+        from hermes_cli.commands import TASK_GROUPS, task_group_of
+
+        groups: dict[str, str] = {}
+        group_map: dict[str, list[list[str]]] = {}
+        group_order: list[str] = [*TASK_GROUPS]
+
+        def _tag_group(key: str, desc: str, fallback: str) -> None:
+            label = task_group_of(key, fallback)
+            if not label:
+                return
+            groups[key] = label
+            if label not in group_map:
+                group_map[label] = []
+                if label not in group_order:
+                    group_order.append(label)
+            group_map[label].append([key, desc])
 
         for cmd in COMMAND_REGISTRY:
             if cmd.name in _TUI_HIDDEN or cmd.gateway_only:
@@ -279,6 +297,7 @@ def _(rid, params: dict) -> dict:
 
             desc = _build_description(cmd)
             all_pairs.append([c, desc])
+            _tag_group(c, desc, cmd.category)
 
             cat = cmd.category
             if cat not in cat_map:
@@ -295,6 +314,7 @@ def _(rid, params: dict) -> dict:
                 continue
             canon[name.lower()] = name
             all_pairs.append([name, desc])
+            _tag_group(name, desc, cat)
             if cat not in cat_map:
                 cat_map[cat] = []
                 cat_order.append(cat)
@@ -351,6 +371,14 @@ def _(rid, params: dict) -> dict:
         for cat in cat_order:
             categories.append({"name": cat, "pairs": cat_map[cat]})
 
+        # Task-grouped help view (option B): same pairs, grouped by the
+        # user-facing task axis instead of subsystem categories.
+        task_categories = [
+            {"name": g, "pairs": group_map[g]}
+            for g in group_order
+            if g in group_map
+        ]
+
         sub = {k: v[:] for k, v in SUBCOMMANDS.items()}
         return _ok(
             rid,
@@ -359,6 +387,8 @@ def _(rid, params: dict) -> dict:
                 "sub": sub,
                 "canon": canon,
                 "categories": categories,
+                "groups": groups,
+                "task_categories": task_categories,
                 "skills": skills,
                 "skill_count": skill_count,
                 "warning": warning,
