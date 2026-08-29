@@ -57,8 +57,8 @@ Add any OpenAI-compatible endpoint directly from `/model`:
 
 ```bash
 # Clone
-git clone https://github.com/MisthiosOG/hannes-agent.git
-cd hannes-agent
+git clone https://github.com/MisthiosOG/HannesAgent.git
+cd HannesAgent
 
 # Install
 pip install -e .

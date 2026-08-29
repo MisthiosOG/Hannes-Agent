@@ -129,7 +129,7 @@ conservative at the waist.
   this repo. They place an ongoing maintenance burden on us to keep them working
   against a fast-moving core, for a backend we don't own. Ship them as a
   **standalone plugin repo** users install into `~/.hermes/plugins/` (or via a
-  pip entry point), and promote them via GitHub Discussions on the hannes-agent
+  pip entry point), and promote them via GitHub Discussions on the HannesAgent
   repo. This is a coupling-and-maintenance decision, not
   a quality bar — the plugin can be excellent and still be a close. PRs that add
   such a directory to the tree are closed with a pointer to publish it as its own

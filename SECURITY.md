@@ -6,7 +6,7 @@ scope for vulnerability reports.
 
 ## 1. Reporting a Vulnerability
 
-Report privately via [GitHub Security Advisories](https://github.com/MisthiosOG/hannes-agent/security/advisories/new).
+Report privately via [GitHub Security Advisories](https://github.com/MisthiosOG/HannesAgent/security/advisories/new).
 Do not open public issues for security vulnerabilities. **Hannes-Agent does not operate a bug
 bounty program.**
 

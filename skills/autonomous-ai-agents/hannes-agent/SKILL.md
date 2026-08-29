@@ -8,7 +8,7 @@ platforms: [windows, linux, macos]
 metadata:
   hermes:
     tags: [hannes, setup, configuration, self-improving, learning, cli, tui, features, themes, skins, development]
-    homepage: https://github.com/MisthiosOG/hannes-agent
+    homepage: https://github.com/MisthiosOG/HannesAgent
     related_skills: [claude-code, codex, opencode]
 ---
 
@@ -36,15 +36,15 @@ This skill is a concise operating guide, not the complete source of truth. If a 
 
 - CLI commands: `hannes --help`, `hannes <command> --help`
 - TUI commands: type `/` in the composer (palette) or `/help`
-- Source tree: https://github.com/MisthiosOG/hannes-agent
+- Source tree: https://github.com/MisthiosOG/HannesAgent
 
 Never answer "Hannes can't do that" from memory — check the palette and the source first.
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/MisthiosOG/hannes-agent.git
-cd hannes-agent && pip install -e .
+git clone https://github.com/MisthiosOG/HannesAgent.git
+cd HannesAgent && pip install -e .
 
 # Configure a provider key in ~/.hermes/.env, then:
 hannes            # opens the TUI (splash screen → chat)

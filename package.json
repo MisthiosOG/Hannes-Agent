@@ -27,13 +27,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MisthiosOG/hannes-agent.git"
+    "url": "git+https://github.com/MisthiosOG/HannesAgent.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MisthiosOG/hannes-agent/issues"
+    "url": "https://github.com/MisthiosOG/HannesAgent/issues"
   },
-  "homepage": "https://github.com/MisthiosOG/hannes-agent#readme",
+  "homepage": "https://github.com/MisthiosOG/HannesAgent#readme",
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "typescript-eslint": "8.64.0",
