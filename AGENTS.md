@@ -1,4 +1,4 @@
-# Hermes Agent - Development Guide
+# Hannes-Agent - Development Guide
 
 Instructions for AI coding assistants and developers working on the hermes-agent codebase.
 
@@ -129,8 +129,8 @@ conservative at the waist.
   this repo. They place an ongoing maintenance burden on us to keep them working
   against a fast-moving core, for a backend we don't own. Ship them as a
   **standalone plugin repo** users install into `~/.hermes/plugins/` (or via a
-  pip entry point), and promote them in the Nous Research Discord
-  (`#plugins-skills-and-skins`). This is a coupling-and-maintenance decision, not
+  pip entry point), and promote them via GitHub Discussions on the hannes-agent
+  repo. This is a coupling-and-maintenance decision, not
   a quality bar — the plugin can be excellent and still be a close. PRs that add
   such a directory to the tree are closed with a pointer to publish it as its own
   repo.
@@ -876,8 +876,8 @@ the existing plugin discovery path and use the ABCs/hooks/ctx surface
 we expose; nothing special is needed in core. The reason is
 maintenance load: every product we absorb into the tree becomes our
 burden to keep working against a fast-moving core, for a backend we
-don't own. Promote standalone plugins in the Nous Research Discord
-(`#plugins-skills-and-skins`). PRs that add such a directory under
+don't own. Promote standalone plugins via GitHub Discussions.
+PRs that add such a directory under
 `plugins/` are closed with a pointer to publish it as its own repo —
 this is a coupling decision, not a quality judgment. (The
 `observability/`, `kanban/`, `disk-cleanup/`, etc. directories already
@@ -917,7 +917,7 @@ plug into `agent/context_engine.py`; image-gen providers into
 `agent/image_gen_provider.py`. Reference / docs-companion plugins
 (`example-dashboard`, `strike-freedom-cockpit`, `plugin-llm-example`,
 `plugin-llm-async-example`) live in the
-[`hermes-example-plugins`](https://github.com/NousResearch/hermes-example-plugins)
+[hermes-example-plugins](https://github.com/NousResearch/hermes-example-plugins)
 companion repo, not in this tree.
 
 ### Bot Mode (`apps/desktop/src/plugins/hermes-bots/`)
@@ -1063,8 +1063,8 @@ violate them.
 
 4. **`author` credits the human contributor first.** For external
    contributions, the contributor's real name + GitHub handle goes
-   first; "Hermes Agent" is the secondary collaborator. If the
-   contributor's commit shows "Hermes Agent" as author (because they
+   first; "Hannes-Agent" is the secondary collaborator. If the
+   contributor's commit shows "Hannes-Agent" as author (because they
    used Hermes to draft the skill), replace it with their actual name
    — credit the human, not the tool.
 
