@@ -3637,7 +3637,9 @@ def select_provider_and_model(args=None):
             ordered.append((key, label, members))
 
     for key, provider_info in _custom_provider_map.items():
-        name = provider_info["name"]
+        from hermes_cli.model_switch import _custom_provider_display_name
+
+        name = _custom_provider_display_name(provider_info["name"])
         base_url = provider_info["base_url"]
         short_url = base_url.replace("https://", "").replace("http://", "").rstrip("/")
         saved_model = provider_info.get("model", "")
@@ -11854,7 +11856,7 @@ def cmd_monitoring(args):
         else:
             print("  OTLP endpoint:  not configured (monitoring.export.otlp)")
         print(f"  OTel SDK:       {'installed' if otlp_exporter.is_available() else 'not installed'} "
-              f"(optional extra: hermes-agent[otlp])")
+              f"(optional extra: hannes[otlp])")
         print("\n  Scope: gateway service health + redacted diagnostics only.")
         print("  No prompts, messages, tool args/results, usage analytics, or traces.")
         return

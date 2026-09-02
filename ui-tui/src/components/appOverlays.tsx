@@ -272,12 +272,14 @@ export function FloatingOverlays({
 
   if (overlay.modelPicker) {
     const initialRefresh = typeof overlay.modelPicker === 'object' && overlay.modelPicker.refresh === true
+    const freeOnly = typeof overlay.modelPicker === 'object' && overlay.modelPicker.freeOnly === true
 
     widgets.push({
       id: 'model-picker',
       render: width => (
         <FloatBox color={theme.color.border} width={width}>
           <ModelPicker
+            freeOnly={freeOnly}
             gw={gw}
             initialRefresh={initialRefresh}
             maxWidth={width}

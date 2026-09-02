@@ -37,6 +37,7 @@ export function providerIndexAfterClearingFilter(
 
 export function ModelPicker({
   allowPersistGlobal = true,
+  freeOnly = false,
   gw,
   initialRefresh = false,
   maxWidth,
@@ -83,6 +84,7 @@ export function ModelPicker({
     gw.request<ModelOptionsResponse>('model.options', {
       ...(sessionId ? { session_id: sessionId } : {}),
       ...(initialRefresh ? { refresh: true } : {}),
+      ...(freeOnly ? { free_only: true } : {}),
       // The TUI picker shows the full provider universe with setup
       // affordances ("paste KEY to activate"), so opt into unconfigured
       // rows — the backend now defaults to the configured subset for
@@ -992,6 +994,7 @@ return (
 
 interface ModelPickerProps {
   allowPersistGlobal?: boolean
+  freeOnly?: boolean
   gw: GatewayClient
   initialRefresh?: boolean
   maxWidth?: number

@@ -2240,6 +2240,22 @@ def _extra_headers_from_config(entry: Any) -> dict[str, str]:
     return normalize_extra_headers(entry.get("extra_headers"))
 
 
+def _custom_provider_display_name(raw_name: str) -> str:
+    """Strip the boilerplate "OpenAI Compatible (host)" wrapper for display.
+
+    Old auto-generated custom-provider names were ``OpenAI Compatible
+    (api.example.com)``; showing the host alone keeps the picker readable
+    when several endpoints are saved. Any non-matching name passes through
+    untouched (the user may have chosen their own label).
+    """
+    name = str(raw_name or "").strip()
+    if name.lower().startswith("openai compatible (") and name.endswith(")"):
+        inner = name[len("openai compatible (") : -1].strip()
+        if inner:
+            return inner
+    return name
+
+
 def prewarm_picker_cache_async() -> Optional["_threading.Thread"]:
     """Warm the provider-models disk cache in a background daemon thread.
 
@@ -3625,9 +3641,9 @@ def list_authenticated_providers(
             if group_key not in groups:
                 # Reuse the prefix computed above as the row display name;
                 # fall back to the raw name if stripping left it empty.
-                display_name = _display_prefix or raw_name
+                display_name = _custom_provider_display_name(_display_prefix or raw_name)
                 provider_key = str(entry.get("provider_key") or "").strip()
-                slug = custom_provider_slug(display_name, provider_key)
+                slug = custom_provider_slug(_display_prefix or raw_name, provider_key)
                 groups[group_key] = {
                     "slug": slug,
                     "name": display_name,
@@ -3901,6 +3917,50 @@ def list_authenticated_providers(
     results.sort(key=lambda r: (not r["is_current"], -r["total_models"]))
 
     return results
+
+
+def collect_free_models(
+    current_provider: str = "",
+    current_model: str = "",
+    current_base_url: str = "",
+    user_providers: dict = None,
+    custom_providers: list = None,
+    excluded_providers: list = None,
+) -> list[tuple[str, str, str]]:
+    """Collect all free models across every authenticated provider.
+
+    Returns a list of ``(model_id, provider_slug, provider_label)`` tuples.
+    Reused by the CLI ``/free`` handler and the TUI ``_live_slash_command_output``.
+    """
+    from hermes_cli.inventory import load_picker_context, build_models_payload
+    from hermes_cli.providers import get_label
+
+    ctx = load_picker_context().with_overrides(
+        current_provider=current_provider or "",
+        current_model=current_model or "",
+        current_base_url=current_base_url or "",
+    )
+    try:
+        rows = build_models_payload(
+            ctx,
+            picker_hints=True,
+            pricing=True,
+            for_picker=True,
+            probe_current_custom_provider=True,
+            free_only=True,
+        )["providers"]
+    except Exception:
+        return []
+
+    free_pairs: list[tuple[str, str, str]] = []
+    for row in rows:
+        slug = str(row.get("slug", "")).lower()
+        label = row.get("name") or get_label(slug) or slug
+        for mid in row.get("models") or []:
+            free_pairs.append((mid, slug, label))
+
+    free_pairs.sort(key=lambda p: p[0].lower())
+    return free_pairs
 
 
 def _prepend_moa_picker_provider(providers: List[dict], current_provider: str = "") -> List[dict]:

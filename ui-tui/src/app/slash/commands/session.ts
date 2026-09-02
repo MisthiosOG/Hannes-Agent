@@ -161,6 +161,22 @@ export const sessionCommands: SlashCommand[] = [
   },
 
   {
+    help: 'browse free models from all providers',
+    name: 'free',
+    run: (arg, ctx) => {
+      if (!arg.trim()) {
+        return patchOverlayState({ modelPicker: { freeOnly: true } })
+      }
+
+      if (arg.trim() === '--refresh') {
+        return patchOverlayState({ modelPicker: { freeOnly: true, refresh: true } })
+      }
+
+      ctx.transcript.sys('/free takes no arguments — open the picker or use /model <name> --provider <slug>')
+    }
+  },
+
+  {
     aliases: ['switch', 'session', 'resume'],
     help: 'browse, switch, or resume sessions',
     name: 'sessions',

@@ -127,6 +127,7 @@ def build_models_payload(
     probe_current_custom_provider: bool = False,
     for_picker: bool = False,
     max_models: int | None = None,
+    free_only: bool = False,
 ) -> dict:
     """Build the ``{providers, model, provider}`` shape every consumer
     needs from a single substrate call.
@@ -268,6 +269,8 @@ def build_models_payload(
         rows = _reorder_canonical(rows)
     if pricing:
         _apply_pricing(rows, force_fresh_nous_tier=force_fresh_nous_tier)
+    if free_only:
+        _apply_free_only_filter(rows)
     if capabilities:
         _apply_capabilities(rows)
     if featured:
@@ -287,6 +290,7 @@ def build_model_options_payload(
     explicit_only: bool = False,
     include_unconfigured: bool = False,
     refresh: bool = False,
+    free_only: bool = False,
 ) -> dict:
     """Build the shared API-server/dashboard/TUI model-options payload.
 
@@ -311,6 +315,7 @@ def build_model_options_payload(
         refresh=refresh,
         probe_custom_providers=refresh,
         probe_current_custom_provider=not refresh,
+        free_only=bool(free_only),
     )
 
 
@@ -978,6 +983,38 @@ def _apply_pricing(
                 # is never blocked from picking a model.
                 row["free_tier"] = False
                 row["unavailable_models"] = []
+
+
+def _apply_free_only_filter(rows: list[dict]) -> None:
+    """Filter each row's model list to only free models (mutates in-place).
+
+    Uses the ``pricing`` key set by ``_apply_pricing`` (must be called first)
+    plus provider-specific free tiers (opencode-free, :free suffix, …).
+    Rows with zero free models after filtering are removed.
+    """
+    from hermes_cli.models import is_opencode_zen_free_model
+
+    for row in list(rows):  # iterate over a copy so we can remove rows
+        slug = str(row.get("slug", "")).lower()
+        models = row.get("models") or []
+        pricing = row.get("pricing") or {}
+        free_models: list[str] = []
+        for mid in models:
+            is_free = bool((pricing.get(mid) or {}).get("free"))
+            if not is_free:
+                if slug == "opencode-free":
+                    is_free = True
+                elif is_opencode_zen_free_model(mid):
+                    is_free = True
+                elif str(mid).lower().endswith(":free"):
+                    is_free = True
+            if is_free:
+                free_models.append(mid)
+        if free_models:
+            row["models"] = free_models
+            row["total_models"] = len(free_models)
+        else:
+            rows.remove(row)
 
 
 def _moa_provider_row(current_provider: str = "") -> dict | None:

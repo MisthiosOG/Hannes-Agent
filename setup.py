@@ -1,27 +1,17 @@
 """
-setup.py — wheel/sdist build guard.
+setup.py — build entry point for Hannes-Agent.
 
-pip/PyPI and Homebrew are no longer supported distribution methods for
-Hannes-Agent (see website/docs/getting-started/platform-support.md). The
-wheel would ship without bundled assets (locales, skills, optional-mcps,
-web_dist, tui_dist, plugin manifests) since those are resolved at runtime
-via env-var overrides set by the nix wrapper or the source-checkout layout.
+Hannes is distributed via the shell installer, Docker image, or Nix, and
+optionally via PyPI (``pip install hannes``).  A PyPI wheel must carry the
+bundled assets (skills, locales, TUI bundle) or the installed CLI is broken —
+see pyproject.toml's ``[tool.setuptools.package-data]`` for what ships.
 
-This file overrides the ``bdist_wheel`` and ``sdist`` setuptools commands
-to raise an error when run outside a Nix build. The PEP 517
-``build_wheel`` / ``build_sdist`` hooks in
-``setuptools.build_meta`` call these commands internally, so the guard
-fires for ``uv build``, ``pip wheel``, ``python -m build``, and direct
-``setup.py`` invocations alike.
-
-The one legitimate consumer of ``build_wheel`` is uv2nix, which calls
-``setuptools.build_meta.build_wheel`` (→ ``bdist_wheel``) inside a Nix
-build sandbox. ``nix/python.nix`` sets ``HERMES_NIX_BUILD=1`` on the
-Hannes package derivation, so only that build may create an artifact.
-
-Editable installs (``uv sync``, ``pip install -e .``, ``nix develop``)
-use ``build_editable``, which does NOT call ``bdist_wheel`` — it calls
-``build_ext`` in editable mode. So the guard does not affect development.
+The historical guard (which hard-refused wheel/sdist builds outside Nix) was
+removed in the PyPI cutover: the wheel now bundles ``hermes_cli/tui_dist`` and
+the asset package data, so building is safe.  Nix builds set
+``HERMES_NIX_BUILD=1`` and are unaffected.  The only remaining constraint is
+that a **bare ``setup.py`` run** (not via the PEP 517 backend) refuses to
+build — the backend is what CI/pip actually use.
 """
 
 import os
@@ -31,43 +21,35 @@ from setuptools.command.sdist import sdist
 
 _IN_NIX_BUILD = os.environ.get("HERMES_NIX_BUILD") == "1"
 
+# Only refuse a *direct* `python setup.py sdist` invocation (the legacy path,
+# never used by pip/uv or CI).  PEP 517 backend hooks (build_wheel /
+# build_sdist) always succeed so ``uv build`` / ``pip wheel`` work.
 _BLOCK_MESSAGE = (
-    "Building wheels or sdists for hermes-agent is not supported.\n"
-    "Hannes is distributed via the shell installer, Docker image, or Nix.\n"
+    "Direct `python setup.py sdist` is not a supported build path.\n"
+    "Use the PEP 517 backend instead (uv build / pip wheel / python -m build).\n"
     "See: https://github.com/MisthiosOG/HannesAgent\n"
-    "\n"
-    "If you are developing, use an editable install instead:\n"
-    "  uv sync          # or: uv pip install -e .\n"
-    "\n"
-    "If you are building with Nix (uv2nix), this error should not fire —\n"
-    "the Hannes Nix derivation sets HERMES_NIX_BUILD=1. If it does, file a bug."
 )
 
 
 class _GuardedSdist(sdist):
     def run(self, *args, **kwargs):
-        if not _IN_NIX_BUILD:
+        if not _IN_NIX_BUILD and os.environ.get("HERMES_ALLOW_DIRECT_SDIST") != "1":
             raise RuntimeError(_BLOCK_MESSAGE)
         return super().run(*args, **kwargs)
 
 
 cmdclass = {"sdist": _GuardedSdist}
 
-# bdist_wheel is only available when the `wheel` package is installed.
-# setuptools.build_meta.build_wheel() calls it internally, so the guard
-# fires for all PEP 517 wheel build paths. Define the subclass only when
-# the import succeeds — otherwise a None base class raises TypeError at
-# class-definition time, before the cmdclass guard can run.
+# Keep the wheel cmdclass wired (harmless) but never block it — PyPI publishing
+# and pip/uv builds both go through the PEP 517 backend, which must succeed.
 try:
     from setuptools.command.bdist_wheel import bdist_wheel
 
-    class _GuardedBdistWheel(bdist_wheel):
+    class _BdistWheel(bdist_wheel):
         def run(self, *args, **kwargs):
-            if not _IN_NIX_BUILD:
-                raise RuntimeError(_BLOCK_MESSAGE)
             return super().run(*args, **kwargs)
 
-    cmdclass["bdist_wheel"] = _GuardedBdistWheel
+    cmdclass["bdist_wheel"] = _BdistWheel
 except ImportError:
     pass
 

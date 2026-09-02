@@ -11562,6 +11562,102 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
         if not one_turn:
             HermesCLI._persist_model_switch_to_session(self, result)
 
+    def _handle_free_models(self) -> None:
+        """Handle /free — browse free models across all providers.
+
+        Collects every free model from providers that have credentials,
+        shows one unified picker, and switches to the selection.
+        """
+        from hermes_cli.model_switch import collect_free_models
+
+        try:
+            free_pairs = collect_free_models(
+                current_provider=self.provider or "",
+                current_model=self.model or "",
+                current_base_url=self.base_url or "",
+            )
+        except Exception as exc:
+            _cprint(f"  ✗ Could not build model inventory: {exc}")
+            return
+
+        if not free_pairs:
+            _cprint("  No free models found — add an API key or configure a provider first.")
+            return
+
+        # Non-interactive (TUI subprocess / piped) — fall back to a plain list
+        # instead of silently doing nothing when curses can't open a screen.
+        if not sys.stdin.isatty():
+            _cprint(f"  {len(free_pairs)} free models available:")
+            for mid, slug, _label in free_pairs:
+                _cprint(f"    {mid}  [{slug}]")
+            _cprint("  Switch with: /model <name> --provider <slug>")
+            return
+
+        try:
+            from hermes_cli.curses_ui import curses_radiolist
+        except Exception:
+            curses_radiolist = None
+
+        labels = [f"{mid}  [{label}]" for mid, _slug, label in free_pairs]
+
+        idx: int | None = None
+        if curses_radiolist is not None:
+            try:
+                idx = curses_radiolist(
+                    "Free models across providers:",
+                    labels,
+                    cancel_returns=-1,
+                    searchable=True,
+                )
+            except Exception:
+                idx = None
+        if idx is None:
+            if curses_radiolist is not None:
+                return  # cancelled
+            print()
+            for i, lab in enumerate(labels, 1):
+                print(f"  {i:>2}. {lab}")
+            print(f"  {len(labels) + 1:>2}. Cancel")
+            try:
+                choice = input("Choice: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                return
+            if not choice.isdigit():
+                return
+            ci = int(choice)
+            if not 1 <= ci <= len(labels):
+                return
+            idx = ci - 1
+
+        if not 0 <= idx < len(free_pairs):
+            return
+        chosen_model, chosen_slug, _chosen_label = free_pairs[idx]
+        print()
+
+        from hermes_cli.model_switch import switch_model
+
+        result = switch_model(
+            raw_input=chosen_model,
+            current_provider=self.provider or "",
+            current_model=self.model or "",
+            current_base_url=self.base_url or "",
+            current_api_key=self.api_key or "",
+            explicit_provider=chosen_slug,
+        )
+        if not result.success:
+            _cprint(f"  ✗ {result.error_message}")
+            return
+        if getattr(self, "_app", None):
+            threading.Thread(
+                target=self._confirm_and_apply_cli_model_switch,
+                args=(result, False, False, None),
+                daemon=True,
+            ).start()
+        else:
+            self._confirm_and_apply_cli_model_switch(
+                result, False, False, None
+            )
+
     def _handle_codex_runtime(self, cmd_original: str) -> None:
         """Handle /codex-runtime — toggle the codex app-server runtime opt-in.
 
@@ -12041,6 +12137,8 @@ class HermesCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
             self._handle_sessions_command(cmd_original)
         elif canonical == "model":
             self._handle_model_switch(cmd_original)
+        elif canonical == "free":
+            self._handle_free_models()
         elif canonical == "codex-runtime":
             self._handle_codex_runtime(cmd_original)
 

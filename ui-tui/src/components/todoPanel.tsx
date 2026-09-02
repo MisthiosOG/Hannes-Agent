@@ -9,7 +9,8 @@ import type { TodoItem } from '../types.js'
 const rowColor = (t: Theme, status: TodoItem['status']) => {
   const tone = todoTone(status)
 
-  return tone === 'active' ? t.color.text : tone === 'body' ? t.color.statusFg : t.color.muted
+  // Active/pending todos read as gold so they stand out from white body text.
+  return tone === 'active' ? t.color.warn : tone === 'body' ? t.color.warn : t.color.muted
 }
 
 export const TodoPanel = memo(function TodoPanel({

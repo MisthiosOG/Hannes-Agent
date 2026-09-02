@@ -951,6 +951,15 @@ def compute_toolset_availability(enabled_toolsets: List[str] = None) -> Dict[str
     }
 
 
+def _quick_commands() -> str:
+    """Return the important slash commands shown on the welcome banner.
+
+    Deliberately a small curated set — the banner is for orientation, not a
+    reference; /help has the full list.
+    """
+    return "/model · /free · /new · /clear · /resume · /status · /help"
+
+
 def build_welcome_banner(console: "Console", model: str, cwd: str,
                          tools: List[dict] = None,
                          enabled_toolsets: List[str] = None,
@@ -1223,6 +1232,12 @@ def build_welcome_banner(console: "Console", model: str, cwd: str,
             right_lines.append(f"[dim {dim}]{category}:[/] [{text}]{skills_str}[/]")
     else:
         right_lines.append(f"[dim {dim}]No skills installed[/]")
+
+    right_lines.append("")
+    right_lines.append(f"[bold {accent}]Quick Commands[/]")
+    right_lines.append(
+        f"[{text}]{_quick_commands()}[/]"
+    )
 
     right_lines.append("")
     mcp_connected = sum(1 for s in mcp_status if s["connected"]) if mcp_status else 0

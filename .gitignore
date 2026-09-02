@@ -64,6 +64,7 @@ privvy*
 images/
 __pycache__/
 hermes_agent.egg-info/
+hannes.egg-info/
 wandb/
 testlogs
 playwright-report/
@@ -100,6 +101,7 @@ apps/desktop/src/**/*.d.ts
 !apps/desktop/src/vite-env.d.ts
 
 # Repo-root build/debug artifacts that must never be committed
+/build/
 /log.txt
 /sqlite_leak_fix.png
 /*.png.bak

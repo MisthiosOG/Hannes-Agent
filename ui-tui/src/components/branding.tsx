@@ -615,6 +615,10 @@ export function SessionPanel({ info, maxWidth, sid, t }: SessionPanelProps) {
         <Text color={t.color.muted}>/help for commands</Text>
       </Text>
 
+      <Text color={t.color.muted} wrap="truncate-end">
+        /model · /free · /new · /clear · /resume · /status
+      </Text>
+
       {typeof info.update_behind === 'number' && info.update_behind > 0 && (
         <Text bold color={t.color.warn}>
           ! {info.update_behind} {info.update_behind === 1 ? 'commit' : 'commits'} behind
