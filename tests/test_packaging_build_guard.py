@@ -56,16 +56,22 @@ def _build_artifact(kind: str, tmp_path, *, nix_build: bool) -> subprocess.Compl
 
 
 @pytest.mark.parametrize("kind", ["sdist", "wheel"])
-def test_artifact_build_rejects_nix_development_shell_environment(kind, tmp_path):
+def test_artifact_build_rejects_non_nix_invocation(kind, tmp_path):
     result = _build_artifact(kind, tmp_path, nix_build=False)
 
-    assert result.returncode != 0
-    assert "Building wheels or sdists for hermes-agent is not supported" in result.stderr
+    # The guard now blocks only sdist outside a Nix build (the legacy
+    # distribution path). PEP 517 wheel builds always succeed so that
+    # `pip install hannes` and PyPI trusted publishing work.
+    if kind == "sdist":
+        assert result.returncode != 0
+        assert "Direct `python setup.py sdist` is not a supported build path" in result.stderr
+    else:
+        assert result.returncode == 0, result.stderr
 
 
 @pytest.mark.parametrize(
     ("kind", "artifact_glob"),
-    [("sdist", "hermes_agent-*.tar.gz"), ("wheel", "hermes_agent-*.whl")],
+    [("sdist", "hannes-*.tar.gz"), ("wheel", "hannes-*.whl")],
 )
 def test_artifact_build_allows_explicit_nix_package_build_marker(kind, artifact_glob, tmp_path):
     result = _build_artifact(kind, tmp_path, nix_build=True)
