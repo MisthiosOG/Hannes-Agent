@@ -28,6 +28,38 @@ No messaging gateway. No dashboard. No cron scheduler. Just you, the terminal, a
 
 ---
 
+## Quick start
+
+### One-liner install (recommended)
+
+**Windows (PowerShell):**
+```powershell
+iex (irm https://raw.githubusercontent.com/MisthiosOG/Hannes-Agent/main/scripts/install.ps1)
+```
+
+**Windows (CMD):**
+```cmd
+curl -fsSL https://raw.githubusercontent.com/MisthiosOG/Hannes-Agent/main/scripts/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
+
+**Linux / macOS:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/MisthiosOG/Hannes-Agent/main/scripts/install.sh | bash
+```
+
+### Install via pip (lightweight, no bundled skills)
+
+```bash
+pip install git+https://github.com/MisthiosOG/Hannes-Agent
+```
+
+Then run:
+```bash
+hannes
+```
+
+---
+
 ## Signature features
 
 ### Learns without being asked
@@ -49,25 +81,6 @@ Clean terminal UI with no emoji clutter, rail-based panels, and a spinner that s
 Add any OpenAI-compatible endpoint directly from `/model`:
 ```
 /model → OpenAI Compatible → paste base URL → paste API key → models auto-load
-```
-
----
-
-## Quick start
-
-```bash
-# Clone
-git clone https://github.com/MisthiosOG/HannesAgent.git
-cd HannesAgent
-
-# Install
-pip install -e .
-
-# Configure your API key
-echo 'OPENROUTER_API_KEY=your_key' >> ~/.hermes/.env
-
-# Run
-hannes
 ```
 
 ---
