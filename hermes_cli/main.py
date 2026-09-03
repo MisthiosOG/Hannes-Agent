@@ -2711,7 +2711,13 @@ def _launch_tui(
     accept_hooks: bool = False,
 ):
     """Replace current process with the TUI."""
-    tui_dir = PROJECT_ROOT / "ui-tui"
+    # Hannes custom: honor HERMES_TUI_DIR so a pip install can point at a
+    # built ui-tui workspace outside site-packages (wheel ships no TUI bundle).
+    _tui_dir_env = os.environ.get("HERMES_TUI_DIR")
+    if _tui_dir_env and (Path(_tui_dir_env) / "dist" / "entry.js").is_file():
+        tui_dir = Path(_tui_dir_env)
+    else:
+        tui_dir = PROJECT_ROOT / "ui-tui"
 
     import tempfile
 

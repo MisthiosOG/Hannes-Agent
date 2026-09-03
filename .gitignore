@@ -147,6 +147,8 @@ opencode.json
 config/mcporter.json
 
 hermes_cli/tui_dist/*
+!hermes_cli/tui_dist/
+!hermes_cli/tui_dist/entry.js
 hermes_cli/scripts/
 docs/superpowers/*
 # Working directory for the Hermes Agent's session state (~/.hermes/ at runtime;
