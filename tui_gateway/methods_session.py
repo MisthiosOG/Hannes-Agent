@@ -147,8 +147,18 @@ def _(rid, params: dict) -> dict:
                     if session_model_override and session_model_override.get("provider")
                     else {}
                 ),
-                "tools": {},
-                "skills": {},
+                # Hannes: paint the statusline immediately. The deferred
+                # session.info carries the same data when the agent lands, but
+                # a fresh boot must already show provider · model, tool/skill
+                # counts and brain level — not an empty chrome for a minute.
+                **(
+                    {"provider": cfg_provider}
+                    if (cfg_provider := str((_load_cfg().get("model") or {}).get("provider") or "").strip()) and not session_model_override
+                    else {}
+                ),
+                "tools": _instant_tool_counts(),
+                "skills": _instant_skill_counts(),
+                **(_brain_info() or {}),
                 "cwd": _sessions[sid]["cwd"],
                 "branch": _git_branch_for_cwd(_sessions[sid]["cwd"]),
                 "project": _project_info_for_cwd(_sessions[sid]["cwd"]),

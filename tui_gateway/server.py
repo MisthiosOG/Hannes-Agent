@@ -5787,6 +5787,46 @@ def _brain_stats() -> dict:
     }
 
 
+def _instant_tool_counts() -> dict:
+    """Toolset -> tool-name groups from the registry, without building an agent.
+
+    Cheap enough to run synchronously inside session.create so the TUI
+    statusline ("26 tools") paints on first frame instead of waiting for
+    the deferred agent build's session.info.
+    """
+    try:
+        from model_tools import get_tool_definitions, get_toolset_for_tool
+
+        groups: dict[str, list[str]] = {}
+        for t in get_tool_definitions(quiet_mode=True):
+            name = t.get("function", {}).get("name", "")
+            if not name:
+                continue
+            ts = get_toolset_for_tool(name) or "other"
+            groups.setdefault(ts, []).append(name)
+        return groups
+    except Exception:
+        return {}
+
+
+def _instant_skill_counts() -> dict:
+    """Installed skills grouped by category -- same shape as session.info."""
+    try:
+        from hermes_cli.banner import get_available_skills
+
+        return get_available_skills()
+    except Exception:
+        return {}
+
+
+def _brain_info() -> dict | None:
+    """Brain learning stats for the statusline (Lv.N badge), or None."""
+    try:
+        return {"brain": _brain_stats()}
+    except Exception:
+        return None
+
+
 def _session_info(agent, session: dict | None = None) -> dict:
     if session is None:
         for candidate in _sessions.values():
