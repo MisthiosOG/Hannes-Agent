@@ -570,12 +570,15 @@ _PROVIDER_MODELS: dict[str, list[str]] = {
     # "opencode/latest"; we send honest Hannes attribution and don't
     # impersonate other clients — verified 2026-08-21).
     "opencode-free": [
-        "x-preview-f-free",  # "Ox Alpha" stealth model — free, 1M ctx, ZDR
-        "hy3-free",
-        "laguna-s-2.1-free",
-        "nemotron-3-ultra-free",
+        # Live-verified against GET /zen/v1/models (2026-09-03) — these answer
+        # keyless chat requests; the old stealth/ox-alpha ids 401 upstream.
         "nemotron-3.5-lightning-free",
-        "muse-spark-1.2-contributor-free",
+        "nemotron-3-ultra-free",
+        "deepseek-v4-flash-free",
+        "mimo-v2.5-free",
+        "muse-spark-1.3-contributor-free",
+        "ling-3.0-flash-fin-free",
+        "laguna-s-2.1-free",
     ],
     # Synced against https://opencode.ai/docs/go/ + live GET /zen/go/v1/models
     # (2026-08-20).
