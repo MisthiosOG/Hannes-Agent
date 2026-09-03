@@ -1312,6 +1312,9 @@ DEFAULT_CONFIG = {
         # Hannes default: statusline sits BELOW the composer (model, ctx,
         # clock, mode badge, cwd) — the classic bottom chrome.
         "tui_statusbar": "bottom",
+        # Hannes default: the two-row minimal statusline (running/model/ctx
+        # on top, brand + provider/model + skills/tools/Lv/BUILD/clock below).
+        "tui_statusbar_minimal": True,
         # Which interface bare `hermes` (and `hermes chat`) launches by default:
         #   "cli" — the classic prompt_toolkit REPL (default, preserves prior behavior)
         #   "tui" — the modern Ink TUI (same as passing `--tui`)
