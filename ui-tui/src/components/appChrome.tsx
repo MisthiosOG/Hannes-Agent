@@ -690,11 +690,10 @@ battery,
   // a session title is user-chosen identity and always wins. When the
   // terminal is too narrow for the head, the plain cwd label renders instead.
   const rightLabel = sessionTitle ? ` ${sessionTitle} ` : cwdLabel
-  // The powerline head only takes the right slot once session.info has
-  // arrived (skillsCount > 0 proves the gateway answered) — before that the
-  // plain cwd label renders, and a user-chosen session title always wins.
+  // Hannes: the powerline head (⌘ Hannes-Agent + branch) renders immediately —
+  // it no longer waits for session.info. A user-chosen session title always wins.
   const plHead = powerlineHeadSegments(cols, `${t.brand.icon} ${t.brand.name}`, gitBranch ?? '', cwdLabel)
-  const showPowerlineHead = !sessionTitle && skillsCount > 0 && plHead.brand
+  const showPowerlineHead = !sessionTitle && plHead.brand
 
   const rightLabelWidth = showPowerlineHead ? plHead.width : stringWidth(rightLabel)
   const { leftWidth, rightWidth, separatorWidth } = statusRuleWidths(cols, rightLabel, essentialWidth, rightLabelWidth)
@@ -757,10 +756,13 @@ battery,
   const hasLiveSession = hasSessionInfo || sessionStartedAt != null || turnStartedAt != null || lastTurnEndedAt != null
   const modeText = planMode ? 'PLAN' : yolo ? 'YOLO' : 'BUILD'
   const modeColor = planMode ? t.color.warn : yolo ? t.color.warn : t.color.primary
-  const showClock = hasLiveSession && fits(SEP + WALL_CLOCK_WIDTH)
-  const showMode = hasLiveSession && fits(SEP + stringWidth(modeText))
-  const showSkills = hasSessionInfo && fits(SEP + stringWidth(`${skillsCount} skills`))
-  const showTools = hasSessionInfo && toolsCount > 0 && fits(SEP + stringWidth(`${toolsCount} tools`))
+  // Hannes: session info (skills/tools counts, brain level) renders as soon as
+  // it arrives, but the statusline itself is never gated on it — clock, mode
+  // badge and skills/tools show immediately (counts read 0 until info lands).
+  const showClock = fits(SEP + WALL_CLOCK_WIDTH)
+  const showMode = fits(SEP + stringWidth(modeText))
+  const showSkills = fits(SEP + stringWidth(`${skillsCount} skills`))
+  const showTools = toolsCount > 0 && fits(SEP + stringWidth(`${toolsCount} tools`))
 
   // Parked-background reassurance: a top-level delegate_task runs in the
   // background, so the turn ends (idle) while the subagent keeps working and its

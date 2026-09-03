@@ -72600,7 +72600,7 @@ function StatusRule({
   const essentialWidth = stringWidth("\u2500 ") + batteryWidth + slotWidth + stringWidth(" \u2502 ") + stringWidth(modelText) + (ctxLabel ? stringWidth(" \u2502 ") + stringWidth(ctxLabel) : 0);
   const rightLabel = sessionTitle ? ` ${sessionTitle} ` : cwdLabel;
   const plHead = powerlineHeadSegments(cols, `${t.brand.icon} ${t.brand.name}`, gitBranch ?? "", cwdLabel);
-  const showPowerlineHead = !sessionTitle && skillsCount > 0 && plHead.brand;
+  const showPowerlineHead = !sessionTitle && plHead.brand;
   const rightLabelWidth = showPowerlineHead ? plHead.width : stringWidth(rightLabel);
   const { leftWidth, rightWidth, separatorWidth } = statusRuleWidths(cols, rightLabel, essentialWidth, rightLabelWidth);
   const SEP2 = stringWidth(" \u2502 ");
@@ -72628,10 +72628,10 @@ function StatusRule({
   const hasLiveSession = hasSessionInfo || sessionStartedAt != null || turnStartedAt != null || lastTurnEndedAt != null;
   const modeText = planMode ? "PLAN" : yolo ? "YOLO" : "BUILD";
   const modeColor = planMode ? t.color.warn : yolo ? t.color.warn : t.color.primary;
-  const showClock = hasLiveSession && fits(SEP2 + WALL_CLOCK_WIDTH);
-  const showMode = hasLiveSession && fits(SEP2 + stringWidth(modeText));
-  const showSkills = hasSessionInfo && fits(SEP2 + stringWidth(`${skillsCount} skills`));
-  const showTools = hasSessionInfo && toolsCount > 0 && fits(SEP2 + stringWidth(`${toolsCount} tools`));
+  const showClock = fits(SEP2 + WALL_CLOCK_WIDTH);
+  const showMode = fits(SEP2 + stringWidth(modeText));
+  const showSkills = fits(SEP2 + stringWidth(`${skillsCount} skills`));
+  const showTools = toolsCount > 0 && fits(SEP2 + stringWidth(`${toolsCount} tools`));
   const resumeHintText = subagentCount === 1 ? "\u21A9 resumes when subagent finishes" : `\u21A9 resumes when ${subagentCount} subagents finish`;
   const showResumeHint = !busy && subagentCount > 0 && fits(SEP2 + stringWidth(resumeHintText));
   const showDevCredits = !!devCreditsText && fits(SEP2 + stringWidth(devCreditsText));
