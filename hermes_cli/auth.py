@@ -2347,8 +2347,14 @@ def resolve_provider(
     except ImportError:
         pass  # boto3 not installed — skip Bedrock auto-detection
 
+    # Hannes: a completely fresh install with zero credentials falls back to
+    # the keyless OpenCode free tier instead of hard-failing — the agent opens
+    # and chats immediately, and the user can switch providers via /model.
+    if normalized in {"auto", ""}:
+        return "opencode-free"
+
     raise AuthError(
-        "No inference provider configured. Run 'hermes model' to choose a "
+        "No inference provider configured. Run 'hannes model' to choose a "
         "provider and model, or set an API key (OPENROUTER_API_KEY, "
         "OPENAI_API_KEY, etc.) in ~/.hermes/.env.",
         code="no_provider_configured",
