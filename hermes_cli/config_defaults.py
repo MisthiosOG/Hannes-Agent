@@ -1309,6 +1309,9 @@ DEFAULT_CONFIG = {
         # Set false to restore the legacy c-j submit fallback on unusual POSIX
         # PTYs whose plain Enter arrives as LF instead of CR.
         "cli_multiline_shortcuts": True,
+        # Hannes default: statusline sits BELOW the composer (model, ctx,
+        # clock, mode badge, cwd) — the classic bottom chrome.
+        "tui_statusbar": "bottom",
         # Which interface bare `hermes` (and `hermes chat`) launches by default:
         #   "cli" — the classic prompt_toolkit REPL (default, preserves prior behavior)
         #   "tui" — the modern Ink TUI (same as passing `--tui`)
