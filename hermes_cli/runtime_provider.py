@@ -483,6 +483,16 @@ def _resolve_runtime_from_pool_entry(
     # opencode-zen /v1 to be stripped for chat_completions requests when
     # config.default was still a Claude model.
     effective_model = (target_model or model_cfg.get("default") or "")
+    # Hannes: a fresh install has no model.default — fall back to the
+    # provider's cost-safe default instead of shipping an empty model id
+    # upstream (which 401s with "Model  is not supported").
+    if not effective_model:
+        try:
+            from hermes_cli.models import get_default_model_for_provider
+
+            effective_model = get_default_model_for_provider(provider)
+        except Exception:
+            effective_model = ""
     base_url = (getattr(entry, "runtime_base_url", None) or getattr(entry, "base_url", None) or "").rstrip("/")
     api_key = getattr(entry, "runtime_api_key", None) or getattr(entry, "access_token", "")
     api_mode = "chat_completions"
