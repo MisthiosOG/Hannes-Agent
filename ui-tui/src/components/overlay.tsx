@@ -81,8 +81,8 @@ export function Dialog({ children, hint, title, width }: DialogProps) {
     <Box
       backgroundColor={theme.color.completionBg}
       borderBottom={false}
-      borderLeft
       borderColor={theme.color.primary}
+      borderLeft
       borderRight={false}
       borderStyle="single"
       borderTop={false}

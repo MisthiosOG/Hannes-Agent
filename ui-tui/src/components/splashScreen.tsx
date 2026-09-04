@@ -39,6 +39,7 @@ export function SplashScreen({ onSubmit, planMode, t }: SplashScreenProps) {
 
   useEffect(() => {
     const id = setInterval(() => setBlink(v => !v), 530)
+
     return () => clearInterval(id)
   }, [])
 
@@ -46,16 +47,25 @@ export function SplashScreen({ onSubmit, planMode, t }: SplashScreenProps) {
     if (key.ctrl && (ch === 'c' || ch === '\x03')) {
       return
     }
+
     if (key.return) {
       const trimmed = input.trim()
-      if (trimmed) onSubmit(trimmed)
+
+      if (trimmed) {onSubmit(trimmed)}
+
       return
     }
+
     if (key.backspace || key.delete) {
       setInput(v => v.slice(0, -1))
+
       return
     }
-    if (ch === '\u0015') { setInput(''); return }
+
+    if (ch === '\u0015') { setInput('');
+
+ return }
+
     if (ch && !key.ctrl && !key.meta && ch >= ' ') {
       setInput(v => v + ch)
     }
@@ -74,6 +84,7 @@ export function SplashScreen({ onSubmit, planMode, t }: SplashScreenProps) {
   // Input display truncation
   const innerW = cardW - 2           // minus 2 border columns
   const maxInput = Math.max(4, innerW - 2)
+
   const displayInput = input.length > maxInput
     ? '…' + input.slice(-(maxInput - 1))
     : input

@@ -3,7 +3,7 @@
  * Displays logo + session info briefly, then exits cleanly.
  */
 
-import { Box, Text, forceRedraw, useInput, useStdout } from '@hermes/ink'
+import { Box, forceRedraw, Text, useInput, useStdout } from '@hermes/ink'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import type { Theme } from '../theme.js'
@@ -35,7 +35,7 @@ export function QuitScreen({ cwd, model, sessionTitle, t, onDone }: QuitScreenPr
   const done = useRef(false)
 
   const finish = useCallback(() => {
-    if (done.current) return
+    if (done.current) {return}
     done.current = true
     onDone()
   }, [onDone])
@@ -47,6 +47,7 @@ export function QuitScreen({ cwd, model, sessionTitle, t, onDone }: QuitScreenPr
     // until that frame is installed, otherwise the following diff can repaint
     // from the pre-quit splash buffer again.
     const id = setTimeout(() => forceRedraw(), 0)
+
     return () => clearTimeout(id)
   }, [])
 
@@ -59,7 +60,7 @@ export function QuitScreen({ cwd, model, sessionTitle, t, onDone }: QuitScreenPr
   }, [])
 
   useEffect(() => {
-    if (count <= 0) finish()
+    if (count <= 0) {finish()}
   }, [count, finish])
 
   useInput((_ch, key) => {

@@ -1355,6 +1355,7 @@ export default class Ink {
     }
 
     this.onRender()
+
     // repaint() only resets the virtual buffers. Render immediately so callers
     // that use forceRedraw during a screen transition cannot leave the clear
     // visible until an unrelated React update arrives.

@@ -58,6 +58,7 @@ export function BootBanner({ info, maxWidth, t }: BootBannerProps) {
   const model = info?.model ?? ''
   const profile = info?.profile_name ?? ''
   const branch = info?.branch ?? ''
+
   // Working directory, shortened to the last 2 path segments so a deep
   // path doesn't blow the banner width. Empty when unknown.
   const cwdLabel = info?.cwd
@@ -68,6 +69,7 @@ export function BootBanner({ info, maxWidth, t }: BootBannerProps) {
         .slice(-2)
         .join('/')
     : ''
+
   // EXP footer: filled fraction of the current level (20 facts per level).
   const expFilled = Math.round(((info?.brain?.facts ?? 0) % 20) / 20 * width)
 
@@ -251,7 +253,7 @@ function CompactBanner({ cols, t }: { cols: number; t: Theme }) {
 }
 
 export function Banner({ maxWidth, t }: { maxWidth?: number; t: Theme }) {
-  if (!LEGACY_UI_VISIBLE) return null
+  if (!LEGACY_UI_VISIBLE) {return null}
   const term = useStdout().stdout?.columns ?? 80
   const cols = Math.max(1, Math.min(term, maxWidth ?? term))
 
@@ -261,6 +263,7 @@ export function Banner({ maxWidth, t }: { maxWidth?: number; t: Theme }) {
 
   const logoLines = logo(t.color, t.bannerLogo || undefined)
   const logoW = t.bannerLogo ? artWidth(logoLines) : LOGO_WIDTH
+
   // Each tier renders its rows through a single-column WidgetGrid sized to
   // the available columns — same visual output as the old plain flex column
   // (cells clip where truncate-end used to), but the banner is now a
@@ -360,7 +363,7 @@ const SKILLS_MAX = 8
 const TOOLSETS_MAX = 8
 
 export function SessionPanel({ info, maxWidth, sid, t }: SessionPanelProps) {
-  if (!LEGACY_UI_VISIBLE) return null
+  if (!LEGACY_UI_VISIBLE) {return null}
   const term = useStdout().stdout?.columns ?? 100
   const cols = Math.max(20, Math.min(term, maxWidth ?? term))
   const heroLines = caduceus(t.color, t.bannerHero || undefined)
@@ -648,8 +651,8 @@ export function SessionPanel({ info, maxWidth, sid, t }: SessionPanelProps) {
     <Box
       backgroundColor={t.color.completionBg}
       borderBottom={false}
-      borderLeft
       borderColor={t.color.border}
+      borderLeft
       borderRight={false}
       borderStyle="single"
       borderTop={false}
@@ -682,8 +685,8 @@ export function Panel({ sections, t, title }: PanelProps) {
     <Box
       backgroundColor={mix(t.color.completionBg, t.color.accent, 0.08)}
       borderBottom={false}
-      borderLeft
       borderColor={t.color.border}
+      borderLeft
       borderRight={false}
       borderStyle="single"
       borderTop={false}

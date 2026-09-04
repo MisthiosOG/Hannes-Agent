@@ -720,17 +720,20 @@ function paintHighlights(value: string, accentOpen: string, mask: number[] | nul
     const want = mask[offset + index] ?? 0
 
     if (want !== on) {
-      if (on === 2) out += CHIP_OFF
-      else if (on === 1) out += `${ESC}[39m`
-      if (want === 2) out += CHIP_OPEN
-      else if (want === 1) out += accentOpen
+      if (on === 2) {out += CHIP_OFF}
+      else if (on === 1) {out += `${ESC}[39m`}
+
+      if (want === 2) {out += CHIP_OPEN}
+      else if (want === 1) {out += accentOpen}
+
       on = want
     }
 
     out += segment
   }
 
-  if (on === 2) return `${out}${CHIP_OFF}`
+  if (on === 2) {return `${out}${CHIP_OFF}`}
+
   return on === 1 ? `${out}${ESC}[39m` : out
 }
 
@@ -925,6 +928,7 @@ export function TextInput({
   useEffect(() => {
     if (!focus || display) {
       setBlinkOn(true)
+
       return
     }
 

@@ -1,4 +1,3 @@
-import { pick } from '../lib/text.js'
 
 export const PLACEHOLDERS = [
   'Ask me anything…',

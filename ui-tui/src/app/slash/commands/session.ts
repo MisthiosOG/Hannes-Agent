@@ -800,6 +800,7 @@ export const sessionCommands: SlashCommand[] = [
               'brain.snapshot',
               { limit: 1 }
             )
+
             brain = asRpcResult(raw) ?? {}
           } catch {
             // brain unavailable — stats still render with zeros
@@ -817,13 +818,16 @@ export const sessionCommands: SlashCommand[] = [
 
           // usage: 60 in · 112 out · 1 call
           const usageBits = [`${f(r?.input)} in`, `${f(r?.output)} out`]
+
           if (r?.calls) {
             usageBits.push(`${f(r.calls)} call${r.calls === 1 ? '' : 's'}`)
           }
+
           rows.push(['usage', usageBits.join(' · ')])
 
           // spend: $0.0042 · ctx ██░░ 2% (22.8k/1M)
           const spendBits: string[] = []
+
           if (r?.cost_usd !== undefined) {
             spendBits.push(`$${r.cost_usd < 0.01 ? r.cost_usd.toFixed(4) : r.cost_usd.toFixed(2)}${r.cost_status === 'exact' ? '' : ' est'}`)
           }
@@ -837,6 +841,7 @@ export const sessionCommands: SlashCommand[] = [
           }
 
           const spendRow = rows.push(['spend', spendBits.join(' · ')]) - 1
+
           if (r?.cost_usd !== undefined) {
             // cheap → ok, expensive → warn
             valueColors[spendRow] = r.cost_usd > 0.1 ? 'warn' : 'ok'

@@ -4,8 +4,8 @@ import type { ReactNode } from 'react'
 
 import { useGateway } from '../app/gatewayContext.js'
 import type { AppOverlaysProps } from '../app/interfaces.js'
-import { fuzzyMatchIndices } from '../app/slash/fuzzyScore.js'
 import { $overlayState, hasFloatingPanel, patchOverlayState } from '../app/overlayStore.js'
+import { fuzzyMatchIndices } from '../app/slash/fuzzyScore.js'
 import { $uiSessionId, $uiTheme } from '../app/uiStore.js'
 
 import { ActiveSessionSwitcher } from './activeSessionSwitcher.js'
@@ -303,6 +303,7 @@ export function FloatingOverlays({
       )
     })
   }
+
   if (overlay.skillsHub) {
     widgets.push({
       id: 'skills-hub',
@@ -386,6 +387,7 @@ export function FloatingOverlays({
         // when a long skill name scrolls into view. Names past the cap
         // truncate with an ellipsis.
         const NAME_CAP = 22
+
         const nameW =
           Math.min(
             NAME_CAP,
@@ -398,9 +400,9 @@ export function FloatingOverlays({
 
           return [...shown].map((ch, i) => (
             <Text
-              key={i}
               bold={active || hits.has(i)}
               color={hits.has(i) ? theme.color.primary : active ? theme.color.text : theme.color.label}
+              key={i}
             >
               {ch}
             </Text>

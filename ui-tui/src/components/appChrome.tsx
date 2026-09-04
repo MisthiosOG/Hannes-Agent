@@ -6,8 +6,8 @@ import unicodeSpinners from 'unicode-animations'
 import { $delegationState } from '../app/delegationStore.js'
 import type { BatteryInfo, IndicatorStyle, Notice } from '../app/interfaces.js'
 import { $isStatusRuleOccluded } from '../app/overlayStore.js'
-import { $uiTheme } from '../app/uiStore.js'
 import { useTurnSelector } from '../app/turnStore.js'
+import { $uiTheme } from '../app/uiStore.js'
 import { DEV_CREDITS_MODE } from '../config/env.js'
 import { FACES } from '../content/faces.js'
 import { VERBS } from '../content/verbs.js'
@@ -624,6 +624,7 @@ battery,
   const pct = usage.context_percent
   const barColor = ctxBarColor(pct, t)
   const baseSegs = statusBarSegments(cols)
+
   // Minimal mode: drop the visual context bar and the session/idle/voice
   // timers — status + model + context% + the Hannes signature segments only.
   const segs = minimal
@@ -851,8 +852,9 @@ battery,
     const statsWithSep: ReactNode[] = []
     statsNodes.forEach((node, i) => {
       if (i > 0) {
-        statsWithSep.push(<Text key={`sep-${i}`} color={t.color.muted}>{' · '}</Text>)
+        statsWithSep.push(<Text color={t.color.muted} key={`sep-${i}`}>{' · '}</Text>)
       }
+
       statsWithSep.push(node)
     })
 
@@ -861,9 +863,12 @@ battery,
     // pad the left segment to leave room for the widest tick — this is what
     // stops the "Lv." badge's last digit from clipping when the row is tight.
     const statsParts: string[] = []
-    if (skillsCount > 0) statsParts.push(`${skillsCount} skills`)
-    if (toolsCount > 0) statsParts.push(`${toolsCount} tools`)
-    if (brainLevel) statsParts.push(`Lv.${brainLevel}`)
+
+    if (skillsCount > 0) {statsParts.push(`${skillsCount} skills`)}
+
+    if (toolsCount > 0) {statsParts.push(`${toolsCount} tools`)}
+
+    if (brainLevel) {statsParts.push(`Lv.${brainLevel}`)}
     statsParts.push(modeText)
     statsParts.push('00:00:00') // clock placeholder — widest tick
     const statsReserved = stringWidth(statsParts.join(' · '))
@@ -874,7 +879,7 @@ battery,
       // row pushed the right-aligned stats past the terminal edge, clipping
       // the clock.
       <Box flexDirection="column" width={Math.max(20, cols - 2)}>
-        <Box height={1} flexDirection="row" justifyContent="space-between" width={Math.max(20, cols - 2)}>
+        <Box flexDirection="row" height={1} justifyContent="space-between" width={Math.max(20, cols - 2)}>
           <Text wrap="truncate-end">
             <BlockSpinner busy={busy} color={t.color.border} />
             <Text color={t.color.border}>{' '}</Text>
@@ -902,7 +907,7 @@ battery,
             </Text>
           ) : null}
         </Box>
-        <Box height={1} flexDirection="row" justifyContent="space-between" width={Math.max(20, cols - 2)}>
+        <Box flexDirection="row" height={1} justifyContent="space-between" width={Math.max(20, cols - 2)}>
           <Box flexShrink={1} overflow="hidden" width={leftMax}>
             <Text wrap="truncate-end">
               <Text backgroundColor={t.color.primary} bold color={t.color.statusBg}>
@@ -1110,8 +1115,8 @@ export function FloatBox({ children, color, width }: { children: ReactNode; colo
     <Box
       backgroundColor={theme.color.completionBg}
       borderBottom={false}
-      borderLeft
       borderColor={color}
+      borderLeft
       borderRight={false}
       borderStyle="single"
       borderTop={false}

@@ -76,8 +76,8 @@ function RailHeader({
   return (
     <Box
       borderBottom={false}
-      borderLeft
       borderColor={railColor ?? color}
+      borderLeft
       borderRight={false}
       borderStyle="single"
       borderTop={false}

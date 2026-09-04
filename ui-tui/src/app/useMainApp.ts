@@ -16,7 +16,7 @@ import { WHEEL_SCROLL_STEP } from '../config/limits.js'
 import { RESIZE_COALESCE_MS } from '../config/timing.js'
 import { hasLeadGap, prevRenderedMsg } from '../domain/blockLayout.js'
 import { SECTION_NAMES, sectionMode } from '../domain/details.js'
-import { composeTabTitle, fmtProjectCwdBranch, shortCwd } from '../domain/paths.js'
+import { fmtProjectCwdBranch } from '../domain/paths.js'
 import { sessionScopedModelArg } from '../domain/slash.js'
 import { type GatewayClient } from '../gatewayClient.js'
 import type {
@@ -638,8 +638,9 @@ export function useMainApp(gw: GatewayClient) {
   const [spinIdx, setSpinIdx] = useState(0)
 
   useEffect(() => {
-    if (!_busy) return
+    if (!_busy) {return}
     const id = setInterval(() => setSpinIdx(i => (i + 1) % SPIN.length), 90)
+
     return () => clearInterval(id)
   }, [_busy])
 

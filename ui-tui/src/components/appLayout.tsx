@@ -14,6 +14,7 @@ import { usePet } from '../app/usePet.js'
 import { INLINE_MODE, SHOW_FPS, TERMUX_TUI_MODE } from '../config/env.js'
 import { PLACEHOLDER } from '../content/placeholders.js'
 import { prevRenderedMsg } from '../domain/blockLayout.js'
+import { applyCompletion } from '../domain/slash.js'
 import {
   COMPOSER_PROMPT_GAP_WIDTH,
   composerPromptWidth,
@@ -23,11 +24,11 @@ import {
 import { PerfPane } from '../lib/perfPane.js'
 import { composerPromptText } from '../lib/prompt.js'
 import { ActiveWidgetSlot, AmbientDock, AmbientRail, useAmbientRailWidth } from '../sdk/host.js'
+import type { Theme } from '../theme.js'
 
 import { AgentsOverlay } from './agentsOverlay.js'
 import { GoodVibesHeart, StatusRule, StickyPromptTracker, TranscriptScrollbar } from './appChrome.js'
 import { FloatingOverlays, PromptZone } from './appOverlays.js'
-import { applyCompletion } from '../domain/slash.js'
 import { BootBanner, Panel } from './branding.js'
 import { FpsOverlay } from './fpsOverlay.js'
 import { HelpHint } from './helpHint.js'
@@ -37,7 +38,6 @@ import { PetKitty, PetSprite } from './petSprite.js'
 import { QueuedMessages } from './queuedMessages.js'
 import { LiveTodoPanel, StreamingAssistant } from './streamingAssistant.js'
 import { TextInput, type TextInputMouseApi } from './textInput.js'
-import type { Theme } from '../theme.js'
 
 // Box geometry, kept here so the transcript's reservation math matches the
 // rendered overlay exactly.
@@ -540,6 +540,7 @@ const StatusRulePane = memo(function StatusRulePane({
       <StatusRule
         battery={ui.battery ? ui.batteryStatus : null}
         bgCount={ui.bgTasks.size}
+        brainLevel={info?.brain?.level}
         busy={ui.busy}
         cols={composer.cols}
         cwdLabel={status.cwdLabel}
@@ -548,14 +549,15 @@ const StatusRulePane = memo(function StatusRulePane({
         indicatorStyle={ui.indicatorStyle}
         lastTurnEndedAt={status.lastTurnEndedAt}
         liveSessionCount={ui.liveSessionCount}
+        minimal={ui.statusMinimal}
         model={info?.model ?? ''}
         modelFast={info?.fast || info?.service_tier === 'priority'}
         modelReasoningEffort={info?.reasoning_effort}
-        minimal={ui.statusMinimal}
-        profileName={info?.profile_name}
-        providerName={info?.provider}
         notice={ui.notice}
         onSessionCountClick={() => patchOverlayState({ sessions: true })}
+        planMode={ui.planMode}
+        profileName={info?.profile_name}
+        providerName={info?.provider}
         sessionStartedAt={status.sessionStartedAt}
         sessionTitle={status.sessionTitle}
         skillsCount={skillsCount}
@@ -563,8 +565,6 @@ const StatusRulePane = memo(function StatusRulePane({
         statusColor={status.statusColor}
         t={ui.theme}
         toolsCount={toolsCount}
-        brainLevel={info?.brain?.level}
-        planMode={ui.planMode}
         turnStartedAt={status.turnStartedAt}
         usage={ui.usage}
         voiceLabel={status.voiceLabel}

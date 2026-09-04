@@ -24,8 +24,8 @@ export function HelpHint({ t }: { t: Theme }) {
       <Box
         backgroundColor={t.color.completionBg}
         borderBottom={false}
-        borderLeft
         borderColor={t.color.primary}
+        borderLeft
         borderRight={false}
         borderStyle="single"
         borderTop={false}

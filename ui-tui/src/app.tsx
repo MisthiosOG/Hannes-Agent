@@ -1,6 +1,7 @@
+import { useInput } from '@hermes/ink'
+import { AlternateScreen } from '@hermes/ink'
 import { useStore } from '@nanostores/react'
 import { useCallback, useEffect, useState } from 'react'
-import { useInput } from '@hermes/ink'
 
 import { GatewayProvider } from './app/gatewayContext.js'
 import { $uiState } from './app/uiStore.js'
@@ -9,7 +10,6 @@ import { AppLayout } from './components/appLayout.js'
 import { QuitScreen } from './components/quitScreen.js'
 import { SplashScreen } from './components/splashScreen.js'
 import type { GatewayClient } from './gatewayClient.js'
-import { AlternateScreen } from '@hermes/ink'
 
 export function App({ gw }: { gw: GatewayClient }) {
   const { appActions, appComposer, appProgress, appStatus, appTranscript, gateway, submitRef } = useMainApp(gw)
@@ -36,6 +36,7 @@ export function App({ gw }: { gw: GatewayClient }) {
   useEffect(() => {
     const h = () => setQuitting(true)
     process.on('SIGINT', h)
+
     return () => { process.removeListener('SIGINT', h) }
   }, [])
 
@@ -51,8 +52,9 @@ export function App({ gw }: { gw: GatewayClient }) {
 
   // When quitting, auto-exit after 3s so the process doesn't hang.
   useEffect(() => {
-    if (!quitting) return
+    if (!quitting) {return}
     const t = setTimeout(() => gw.kill('app.die'), 3500)
+
     return () => clearTimeout(t)
   }, [quitting, gw])
 
@@ -69,14 +71,14 @@ export function App({ gw }: { gw: GatewayClient }) {
         <QuitScreen
           cwd={ui.info?.cwd}
           model={ui.info?.model}
-          sessionTitle={ui.sessionTitle}
-          t={ui.theme}
           onDone={() => {
             // Do NOT reset quitting — that would re-render the normal app
             // before the process exits. Just die directly.
             gw.kill('app.die')
             process.exit(0)
           }}
+          sessionTitle={ui.sessionTitle}
+          t={ui.theme}
         />
       </AlternateScreen>
     )

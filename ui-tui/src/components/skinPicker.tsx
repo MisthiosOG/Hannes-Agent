@@ -56,6 +56,7 @@ export function SkinPicker({ gw, maxWidth, onClose, t }: SkinPickerProps) {
   const view = useMemo(() => {
     const skins = list?.skins ?? []
     const needle = query.trim().toLowerCase()
+
     const matched = needle
       ? skins.filter(s => s.name.toLowerCase().includes(needle) || (s.description ?? '').toLowerCase().includes(needle))
       : skins

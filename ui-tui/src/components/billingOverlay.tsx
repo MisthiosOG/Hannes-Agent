@@ -43,8 +43,8 @@ export function BillingOverlay({ onClose, onPatch, overlay, t }: BillingOverlayP
     <Box
       backgroundColor={t.color.completionBg}
       borderBottom={false}
-      borderLeft
       borderColor={t.color.accent}
+      borderLeft
       borderRight={false}
       borderStyle="single"
       borderTop={false}
@@ -861,8 +861,8 @@ function AutoReloadScreen({ ctx, onClose, onPatch, s, t }: ScreenProps) {
       <Text color={focused ? t.color.label : t.color.muted}>{label}</Text>
       <Box
         borderBottom={false}
-        borderLeft
         borderColor={focused ? t.color.accent : t.color.border}
+        borderLeft
         borderRight={false}
         borderStyle="single"
         borderTop={false}

@@ -324,6 +324,7 @@ export function useSubmission(opts: UseSubmissionOptions) {
           'do NOT write files, run commands, or make changes. Analyze, ' +
           'research with read-only tools, and present a clear plan only.\n\n'
         : ''
+
       const finalText = planPrefix + submission.text
       send(finalText, true, submission.display, value => value)
     },

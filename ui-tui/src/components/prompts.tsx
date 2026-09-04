@@ -1,8 +1,8 @@
 import { Box, Text, useInput, wrapAnsi } from '@hermes/ink'
 import { useEffect, useState } from 'react'
 
-import { isMac } from '../lib/platform.js'
 import { mix } from '../lib/color.js'
+import { isMac } from '../lib/platform.js'
 import { clarifyBatchRevisitState } from '../lib/text.js'
 import type { Theme } from '../theme.js'
 import type { ApprovalReq, ClarifyReq, ConfirmReq } from '../types.js'
@@ -117,7 +117,7 @@ export function ApprovalPrompt({ cols = 80, onChoice, req, t }: ApprovalPromptPr
   return (
     // OpenCode-style: violet left rail, no box — reads inline with the
     // transcript like the diff viewer, not as a separate floating panel.
-    <Box backgroundColor={mix(t.color.completionBg, t.color.warn, 0.08)} borderBottom={false} borderLeft borderColor={t.color.warn} borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
+    <Box backgroundColor={mix(t.color.completionBg, t.color.warn, 0.08)} borderBottom={false} borderColor={t.color.warn} borderLeft borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
       <Text bold color={t.color.warn}>
         ⚠ approval required · {req.description}
       </Text>
@@ -324,7 +324,7 @@ export function ClarifyPrompt({ cols = 80, onAnswer, onCancel, onQuestionAnswer,
 
     return (
       // OpenCode-style: accent left rail, no box — inline with transcript.
-      <Box backgroundColor={mix(t.color.completionBg, t.color.accent, 0.08)} borderBottom={false} borderLeft borderColor={t.color.accent} borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
+      <Box backgroundColor={mix(t.color.completionBg, t.color.accent, 0.08)} borderBottom={false} borderColor={t.color.accent} borderLeft borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
         {heading}
 
         {batch.map((q, i) => {
@@ -391,7 +391,7 @@ export function ClarifyPrompt({ cols = 80, onAnswer, onCancel, onQuestionAnswer,
   if (typing || !choices.length) {
     return (
       // OpenCode-style: accent left rail, no box.
-      <Box backgroundColor={mix(t.color.completionBg, t.color.accent, 0.08)} borderBottom={false} borderLeft borderColor={t.color.accent} borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
+      <Box backgroundColor={mix(t.color.completionBg, t.color.accent, 0.08)} borderBottom={false} borderColor={t.color.accent} borderLeft borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
         {heading}
 
         <Box>
@@ -417,7 +417,7 @@ export function ClarifyPrompt({ cols = 80, onAnswer, onCancel, onQuestionAnswer,
 
   return (
     // OpenCode-style: accent left rail, no box.
-    <Box backgroundColor={mix(t.color.completionBg, t.color.accent, 0.08)} borderBottom={false} borderLeft borderColor={t.color.accent} borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
+    <Box backgroundColor={mix(t.color.completionBg, t.color.accent, 0.08)} borderBottom={false} borderColor={t.color.accent} borderLeft borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
       {heading}
 
       {divider(cols, t)}
@@ -474,7 +474,7 @@ export function ConfirmPrompt({ cols = 80, onCancel, onConfirm, req, t }: Confir
 
   return (
     // OpenCode-style: left rail, no box — reads inline with transcript.
-    <Box backgroundColor={mix(t.color.completionBg, accent, 0.08)} borderBottom={false} borderLeft borderColor={accent} borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
+    <Box backgroundColor={mix(t.color.completionBg, accent, 0.08)} borderBottom={false} borderColor={accent} borderLeft borderRight={false} borderStyle="single" borderTop={false} flexDirection="column" paddingLeft={1}>
       <Text bold color={accent}>
         {req.danger ? '⚠' : '?'} {req.title}
       </Text>

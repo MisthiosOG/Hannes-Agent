@@ -36,12 +36,14 @@ it('debug narrow 80', () => {
       voiceLabel: '',
       yolo: false
     })
+
     const inst = renderSync(el, {
       patchConsole: false,
       stderr: new PassThrough() as never,
       stdin: new PassThrough() as never,
       stdout: stdout as never
     })
+
     inst.unmount()
     const line = stripAnsi(output).split('\n')[0]
     console.log(`cols=${cols} len=${line.length}:`, JSON.stringify(line))

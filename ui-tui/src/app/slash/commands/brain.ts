@@ -1,6 +1,6 @@
 import type { GatewayClient } from '../../../gatewayClient.js'
-import { asRpcResult, rpcErrorMessage } from '../../../lib/rpc.js'
 import { openExternalUrl } from '../../../lib/openExternalUrl.js'
+import { asRpcResult } from '../../../lib/rpc.js'
 import type { PanelSection } from '../../../types.js'
 import type { SlashCommand } from '../types.js'
 
@@ -27,6 +27,7 @@ const factsPanel = (r: BrainSnapshot): PanelSection[] => {
   })
 
   const cats = r.categories ?? []
+
   if (cats.length) {
     sections.push({
       rows: cats.map(c => [c.name, `${c.count} facts`]),
@@ -35,6 +36,7 @@ const factsPanel = (r: BrainSnapshot): PanelSection[] => {
   }
 
   const facts = r.facts ?? []
+
   if (facts.length) {
     sections.push({
       rows: facts.map(f => [f.category, `${f.content}  (${f.trust.toFixed(2)}t · ${f.used}x)`]),

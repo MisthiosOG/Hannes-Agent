@@ -43,8 +43,8 @@ export function SubscriptionOverlay({ onClose, onPatch, overlay, t }: Subscripti
       <Box
       backgroundColor={t.color.completionBg}
       borderBottom={false}
-      borderLeft
       borderColor={t.color.accent}
+      borderLeft
       borderRight={false}
       borderStyle="single"
       borderTop={false}
@@ -60,8 +60,8 @@ export function SubscriptionOverlay({ onClose, onPatch, overlay, t }: Subscripti
     <Box
       backgroundColor={t.color.completionBg}
       borderBottom={false}
-      borderLeft
       borderColor={t.color.accent}
+      borderLeft
       borderRight={false}
       borderStyle="single"
       borderTop={false}

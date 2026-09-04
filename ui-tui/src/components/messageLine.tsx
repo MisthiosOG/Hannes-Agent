@@ -370,6 +370,7 @@ export const MessageLine = memo(function MessageLine({
 
         if (useCardStyle) {
           const barColor = msg.role === 'user' ? t.color.shellDollar : t.color.accent
+
           // Cards have NO gutter — the rail replaces it — so the body width
           // must be role-independent. transcriptBodyWidth shrinks by the
           // role's gutter (user = prompt width 2, assistant = 3), which made

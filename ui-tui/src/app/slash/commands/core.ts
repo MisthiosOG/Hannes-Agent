@@ -22,9 +22,9 @@ import {
   isRemoteShellSession
 } from '../../../lib/terminalSetup.js'
 import type { Msg, PanelSection } from '../../../types.js'
-import { getUiState, patchUiState } from '../../uiStore.js'
 import type { StatusBarMode } from '../../interfaces.js'
 import { patchOverlayState } from '../../overlayStore.js'
+import { getUiState, patchUiState } from '../../uiStore.js'
 import type { SlashCommand } from '../types.js'
 
 const flagFromArg = (arg: string, current: boolean): boolean | null => {
@@ -96,10 +96,12 @@ export const coreCommands: SlashCommand[] = [
       const next = !getUiState().planMode
       patchUiState({ planMode: next })
       const sid = getUiState().sid
+
       if (sid) {
         const { gw } = ctx.gateway
         gw.request('session.plan_mode', { plan_mode: next, session_id: sid }).catch(() => {})
       }
+
       ctx.transcript.sys(next ? 'plan mode on' : 'build mode on')
     }
   },
@@ -112,6 +114,7 @@ export const coreCommands: SlashCommand[] = [
       const cats = ctx.local.catalog?.taskCategories?.length
         ? ctx.local.catalog.taskCategories
         : ctx.local.catalog?.categories
+
       const sections: PanelSection[] = (cats ?? []).map(cat => ({
         rows: cat.pairs,
         title: cat.name
