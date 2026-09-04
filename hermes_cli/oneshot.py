@@ -438,6 +438,20 @@ def _run_agent(
         explicit_base_url=explicit_base_url_from_alias,
     )
 
+    # Hannes: fresh install with no model.default — fill the gap with the
+    # provider's cost-safe default (opencode-free resolves keyless) instead
+    # of shipping an empty model id upstream.
+    if not (effective_model or "").strip():
+        try:
+            from hermes_cli.models import get_default_model_for_provider
+
+            effective_model = (
+                (model or "").strip()
+                or get_default_model_for_provider(runtime.get("provider") or "")
+            )
+        except Exception:
+            pass
+
     # Pull in explicit toolsets when provided; otherwise use whatever the user
     # has enabled for "cli". sorted() gives stable ordering for config-derived
     # sets; explicit values preserve user order.
