@@ -856,6 +856,19 @@ battery,
       statsWithSep.push(node)
     })
 
+    // Reserve the exact column count the stats need on the right. The clock is
+    // the only segment that changes width as it ticks (HH:MM:SS = 8), so we
+    // pad the left segment to leave room for the widest tick — this is what
+    // stops the "Lv." badge's last digit from clipping when the row is tight.
+    const statsParts: string[] = []
+    if (skillsCount > 0) statsParts.push(`${skillsCount} skills`)
+    if (toolsCount > 0) statsParts.push(`${toolsCount} tools`)
+    if (brainLevel) statsParts.push(`Lv.${brainLevel}`)
+    statsParts.push(modeText)
+    statsParts.push('00:00:00') // clock placeholder — widest tick
+    const statsReserved = stringWidth(statsParts.join(' · '))
+    const leftMax = Math.max(10, (cols - 2) - statsReserved - 1)
+
     return (
       // Root paddingX={1} on each side: usable width is cols - 2. A full-cols
       // row pushed the right-aligned stats past the terminal edge, clipping
@@ -890,23 +903,25 @@ battery,
           ) : null}
         </Box>
         <Box height={1} flexDirection="row" justifyContent="space-between" width={Math.max(20, cols - 2)}>
-          <Text flexShrink={1} wrap="truncate-end">
-            <Text backgroundColor={t.color.primary} bold color={t.color.statusBg}>
-              {' '}
-              {brandText}{' '}
+          <Box flexShrink={1} overflow="hidden" width={leftMax}>
+            <Text wrap="truncate-end">
+              <Text backgroundColor={t.color.primary} bold color={t.color.statusBg}>
+                {' '}
+                {brandText}{' '}
+              </Text>
+              <Text color={t.color.text}>
+                {' | '}
+                {providerLabel(providerName) ? (
+                  <Text color={t.color.label}>{providerLabel(providerName)} · </Text>
+                ) : profileName && profileName !== 'default' ? (
+                  <Text color={t.color.label}>{profileName} · </Text>
+                ) : null}
+                {model}
+              </Text>
+              {gitBranch ? <Text color={t.color.accent}>{` ${gitBranch}`}</Text> : null}
             </Text>
-            <Text color={t.color.text}>
-              {' | '}
-              {providerLabel(providerName) ? (
-                <Text color={t.color.label}>{providerLabel(providerName)} · </Text>
-              ) : profileName && profileName !== 'default' ? (
-                <Text color={t.color.label}>{profileName} · </Text>
-              ) : null}
-              {model}
-            </Text>
-            {gitBranch ? <Text color={t.color.accent}>{` ${gitBranch}`}</Text> : null}
-          </Text>
-          <Text flexShrink={0}>{statsWithSep}</Text>
+          </Box>
+          <Box flexShrink={0}>{statsWithSep}</Box>
         </Box>
       </Box>
     )

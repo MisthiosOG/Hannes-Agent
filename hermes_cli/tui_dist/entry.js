@@ -72691,6 +72691,14 @@ function StatusRule({
       }
       statsWithSep.push(node);
     });
+    const statsParts = [];
+    if (skillsCount > 0) statsParts.push(`${skillsCount} skills`);
+    if (toolsCount > 0) statsParts.push(`${toolsCount} tools`);
+    if (brainLevel) statsParts.push(`Lv.${brainLevel}`);
+    statsParts.push(modeText);
+    statsParts.push("00:00:00");
+    const statsReserved = stringWidth(statsParts.join(" \xB7 "));
+    const leftMax = Math.max(10, cols - 2 - statsReserved - 1);
     return (
       // Root paddingX={1} on each side: usable width is cols - 2. A full-cols
       // row pushed the right-aligned stats past the terminal edge, clipping
@@ -72713,7 +72721,7 @@ function StatusRule({
           showNotice ? /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { color: noticeColor(notice.level, t), wrap: "truncate-end", children: notice.text }) : sessionTitle ? /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { color: t.color.label, wrap: "truncate-end", children: sessionTitle }) : null
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(Box_default, { height: 1, flexDirection: "row", justifyContent: "space-between", width: Math.max(20, cols - 2), children: [
-          /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(Text, { flexShrink: 1, wrap: "truncate-end", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Box_default, { flexShrink: 1, overflow: "hidden", width: leftMax, children: /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(Text, { wrap: "truncate-end", children: [
             /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(Text, { backgroundColor: t.color.primary, bold: true, color: t.color.statusBg, children: [
               " ",
               brandText,
@@ -72731,8 +72739,8 @@ function StatusRule({
               model
             ] }),
             gitBranch ? /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { color: t.color.accent, children: ` ${gitBranch}` }) : null
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { flexShrink: 0, children: statsWithSep })
+          ] }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Box_default, { flexShrink: 0, children: statsWithSep })
         ] })
       ] })
     );
