@@ -890,7 +890,7 @@ battery,
           ) : null}
         </Box>
         <Box height={1} flexDirection="row" justifyContent="space-between" width={Math.max(20, cols - 2)}>
-          <Text wrap="truncate-end">
+          <Text flexShrink={1} wrap="truncate-end">
             <Text backgroundColor={t.color.primary} bold color={t.color.statusBg}>
               {' '}
               {brandText}{' '}
@@ -906,7 +906,7 @@ battery,
             </Text>
             {gitBranch ? <Text color={t.color.accent}>{` ${gitBranch}`}</Text> : null}
           </Text>
-          <Text wrap="truncate-end">{statsWithSep}</Text>
+          <Text flexShrink={0}>{statsWithSep}</Text>
         </Box>
       </Box>
     )

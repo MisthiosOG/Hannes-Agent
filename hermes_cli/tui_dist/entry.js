@@ -72713,7 +72713,7 @@ function StatusRule({
           showNotice ? /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { color: noticeColor(notice.level, t), wrap: "truncate-end", children: notice.text }) : sessionTitle ? /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { color: t.color.label, wrap: "truncate-end", children: sessionTitle }) : null
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(Box_default, { height: 1, flexDirection: "row", justifyContent: "space-between", width: Math.max(20, cols - 2), children: [
-          /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(Text, { wrap: "truncate-end", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(Text, { flexShrink: 1, wrap: "truncate-end", children: [
             /* @__PURE__ */ (0, import_jsx_runtime24.jsxs)(Text, { backgroundColor: t.color.primary, bold: true, color: t.color.statusBg, children: [
               " ",
               brandText,
@@ -72732,7 +72732,7 @@ function StatusRule({
             ] }),
             gitBranch ? /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { color: t.color.accent, children: ` ${gitBranch}` }) : null
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { wrap: "truncate-end", children: statsWithSep })
+          /* @__PURE__ */ (0, import_jsx_runtime24.jsx)(Text, { flexShrink: 0, children: statsWithSep })
         ] })
       ] })
     );
